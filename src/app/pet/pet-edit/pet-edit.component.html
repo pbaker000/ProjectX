@@ -1,0 +1,10 @@
+<h1>Pet Edit</h1>
+<mat-card *ngIf="pet$ | async as pet">
+    <mat-input-container>
+        <input type="text" matInput [(ngModel)]="pet.name">
+    </mat-input-container>
+    <mat-card-actions align="right">
+        <button mat-button (click)="savePet(pet)">Save</button>
+        <button *ngIf="!isNewPet" mat-button (click)="removePet()">Remove</button>
+    </mat-card-actions>
+</mat-card>

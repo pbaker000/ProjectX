@@ -1,0 +1,25 @@
+button[mat-fab] {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+}
+
+.card-container {
+    padding-top: 25px;
+    display: flex;
+    flex-flow: row wrap;
+  }
+
+mat-card {
+    width: 350px;
+    box-sizing: border-box;
+    margin: 16px;
+  }
+
+  .form {
+    display: flex;
+  }
+  
+  .form mat-card {
+    flex-grow: 1;
+  }
