@@ -1,6 +1,6 @@
 <div class="card-container">
     <mat-card *ngFor=" let pet of pets$ | async">
-        <img mat-card-image src="http://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu">
+        <img mat-card-image [src]="pet.imageUrl" alt="Photo of your pet" height="230" width="300">
         <mat-card-content fxLayoutAlign="space-between center">
             <span>{{pet.name}}</span>
             <button mat-button [routerLink]="['/pet-edit', pet.key]">Edit</button>

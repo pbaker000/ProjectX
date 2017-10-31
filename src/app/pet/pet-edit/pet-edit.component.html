@@ -1,10 +1,19 @@
-<h1>Pet Edit</h1>
 <mat-card *ngIf="pet$ | async as pet">
-    <mat-input-container>
-        <input type="text" matInput [(ngModel)]="pet.name">
-    </mat-input-container>
+    <mat-card-title>Edit Your Pet</mat-card-title>
+    <img *ngIf="pet.imageUrl" id="img1" [src]="pet.imageUrl" alt="pet image profile" height="230" width="300" />
+    <mat-form-field>
+        <input matInput placeholder="Enter your pet's name" [formControl]="name" required [(ngModel)]="pet.name">
+        <mat-error *ngIf="name.invalid">{{getErrorMessage()}}</mat-error>
+    </mat-form-field>
+    <span class="input-photo">
+        <input type="file" (change)="uploadImage($event, pet)">
+    </span>
     <mat-card-actions align="right">
-        <button mat-button (click)="savePet(pet)">Save</button>
-        <button *ngIf="!isNewPet" mat-button (click)="removePet()">Remove</button>
+        <button mat-button [disabled]="finished()" (click)="savePet(pet)">
+            <span>{{isNewPet ? "Save" : "Save Changes"}}</span>
+        </button>
+        <button mat-button (click)="cancel()">Cancel</button>
+        <button *ngIf="!isNewPet" mat-button (click)="openDialog()">Delete</button>
     </mat-card-actions>
+
 </mat-card>

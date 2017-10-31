@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import * as firebase from 'firebase/app';
 import { Pet } from './pet';
 import { AngularFireDatabase, AngularFireObject, AngularFireList } from 'angularfire2/database';
 import { Observable } from 'rxjs/Observable';
@@ -11,6 +12,8 @@ export class PetService {
   petsRef: AngularFireList<Pet>;
   pets: Observable<Pet[]>;
 
+  mypets: Observable<Pet[]>;
+
   constructor(private db: AngularFireDatabase) {
     this.pet = this.db.object('pet');
 
@@ -22,29 +25,42 @@ export class PetService {
 
   getPet(petKey: string) {
     return this.db.object(`pets/${petKey}`).valueChanges()
-     .catch(this.errorHandler);
+      .catch(this.errorHandler);
   }
 
   getPets() {
-    return this.pets.catch(this.errorHandler);  
+    return this.pets.catch(this.errorHandler);
   }
 
   savePet(pet: Pet) {
+
     return this.petsRef.push(pet)
-    .then(_ => console.log('success'))
-    //.catch(error => console.log(error));
-     
+      .then(x => {
+        console.log('Success, saved. Key: ', x.key);
+      });
+      //.catch(error => console.log(error));
   }
+
+
 
   editPet(pet: Pet, petKey: string) {
     return this.petsRef.update(petKey, pet)
-      .then(_ => console.log('success'))
+      .then(_ => console.log('Success, updated'))
       .catch(error => console.log(error));
   }
-  removePet(petKey: string) {
+  removePet(petKey: string, petImgId: string) {
+
+    this.deleteImage(petImgId);
+
     return this.petsRef.remove(petKey)
-      .then(_ => console.log('success'))
+      .then(x => console.log('Success, deleted'))
       .catch(error => console.log(error));
+  }
+
+  deleteImage(petImgId: string) {
+    const storageRef = firebase.storage().ref(`pets/${petImgId}`);
+    storageRef.delete()
+      .then(_ => console.log("Success, image deleted."));
   }
 
   private errorHandler(error) {

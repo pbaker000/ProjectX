@@ -19,7 +19,18 @@ mat-card {
   .form {
     display: flex;
   }
+
+  img {
+    text-align: center;
+    display: block; 
+    line-height: 230px;
+  }
   
   .form mat-card {
     flex-grow: 1;
+  }
+
+  img{
+    image-orientation: from-image;
+    image-orientation: flip;
   }

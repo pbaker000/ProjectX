@@ -10,7 +10,7 @@ import { Observable } from 'rxjs/Observable';
   styleUrls: ['./pet-list.component.css']
 })
 export class PetListComponent implements OnInit {
-  pets$: Observable<Pet>;
+  pets$: Observable<Pet[]>;
 
 
   constructor(private petService: PetService) {
