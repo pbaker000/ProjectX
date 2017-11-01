@@ -11,6 +11,8 @@ img {
     padding-right: 40px;
     padding-bottom: 25px;
     float: left;
+    height: 230px;
+    width: 300px;
 }
 
 mat-card {

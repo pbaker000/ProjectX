@@ -119,4 +119,5 @@ export class PetEditComponent implements OnInit {
   finished() {
     return this.name.hasError('required') || this.buttonDisabled;
   }
+
 }

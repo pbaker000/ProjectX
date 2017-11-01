@@ -24,6 +24,8 @@ mat-card {
     text-align: center;
     display: block; 
     line-height: 230px;
+    height: 230px;
+    width: 350px;
   }
   
   .form mat-card {

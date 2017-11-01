@@ -1,6 +1,7 @@
 <mat-card *ngIf="pet$ | async as pet">
     <mat-card-title>Edit Your Pet</mat-card-title>
-    <img *ngIf="pet.imageUrl" id="img1" [src]="pet.imageUrl" alt="pet image profile" height="230" width="300" />
+    <img id="img1" [src]="pet.imageUrl" onerror="this.src='./assets/images/placeholder.png';" 
+        alt="Select a picture for your pet">
     <mat-form-field>
         <input matInput placeholder="Enter your pet's name" [formControl]="name" required [(ngModel)]="pet.name">
         <mat-error *ngIf="name.invalid">{{getErrorMessage()}}</mat-error>
