@@ -14,28 +14,22 @@ export class PetService {
   userUid: string;
 
   constructor(private db: AngularFireDatabase, private authService: AuthService) {
-    authService.user$.subscribe(user => {
-      this.userUid = user.uid;
-
-      this.petsRef = this.db.list(`${user.uid}/pets`);
-      this.pets = this.petsRef.snapshotChanges().map(changes => {
-        return changes.map(c => ({ key: c.payload.key, ...c.payload.val() }));
-      });
-    });
-
   }
 
   getPet(petKey: string) {
-    return this.db.object(`${this.userUid}/pets/${petKey}`).valueChanges()
+    return this.db.object(`${this.authService.user.uid}/pets/${petKey}`).valueChanges()
       .catch(this.errorHandler);
   }
 
   getPets() {
+    this.petsRef = this.db.list(`${this.authService.user.uid}/pets`);
+    this.pets = this.petsRef.snapshotChanges().map(changes => {
+      return changes.map(c => ({ key: c.payload.key, ...c.payload.val() }));
+    });
     return this.pets.catch(this.errorHandler);
   }
 
   savePet(pet: Pet) {
-
     return this.petsRef.push(pet)
       .then(x => {
         console.log('Success, saved. Key: ', x.key);
@@ -58,7 +52,7 @@ export class PetService {
   }
 
   deleteImage(petImgId: string) {
-    const storageRef = firebase.storage().ref(`${this.userUid}/pets/${petImgId}`);
+    const storageRef = firebase.storage().ref(`pets/${petImgId}`);
     storageRef.delete()
       .then(_ => console.log("Success, image deleted."));
   }

@@ -1,12 +1,12 @@
 <mat-toolbar color='primary'>
   <div fxLayoutAlign="space-between center" class="nav-buttons">
     <span style="cursor: pointer" (click)="onClick()">Alexvet</span>
-    <div *ngIf="!(authService.user$ | async)?.uid">
+    <div *ngIf="!authService.user?.uid">
       <button mat-raised-button color="accent" (click)="authService.login()">Login</button>
     </div>
-    <div *ngIf="(authService.user$ | async)?.uid">
+    <div *ngIf="authService.user?.uid">
       <button mat-button [routerLink]="['/pet-list']">Pets</button>     
-      <span style="font-size: 14px">Welcome, {{(authService.user$ | async)?.displayName}}</span> &nbsp;&nbsp;
+      <span style="font-size: 14px">Welcome, {{authService.user?.displayName}}</span> &nbsp;&nbsp;
       <button mat-raised-button color="accent" (click)="logoutDialog()">Logout</button>
     </div>
   </div>
