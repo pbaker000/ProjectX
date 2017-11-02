@@ -11,6 +11,7 @@ import { EXIF } from 'exif-js';
 import { Ng2ImgToolsService } from 'ng2-img-tools';
 import { Exif } from 'ng2-img-cropper/src/exif'
 import { FormControl, Validators } from '@angular/forms';
+import { AuthService } from '../../auth/auth.service';
 
 
 @Component({
@@ -31,6 +32,7 @@ export class PetEditComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private petService: PetService,
     private dialogService: DialogService,
+    private authService: AuthService
     /*private ng2ImgToolsService: Ng2ImgToolsService*/) {
   }
 
@@ -82,7 +84,7 @@ export class PetEditComponent implements OnInit {
   }
 
   getPet() {
-    this.pet$ = this.petService.getPet(this.petKey);
+    this.pet$ = this.petService.getPet(this.petKey, this.authService.user.uid);
   }
 
   uploadImage(event: any, pet: Pet) {

@@ -29,6 +29,7 @@ import { Ng2ImgToolsModule } from 'ng2-img-tools';
 //import { ImageCropperComponent, CropperSettings } from 'ng2-img-cropper';
 import { AuthService } from './auth/auth.service';
 import { AuthGuard } from './auth/auth.guard';
+import { NotFoundComponent } from './not-found/not-found.component';
 
 
 @NgModule({
@@ -38,6 +39,7 @@ import { AuthGuard } from './auth/auth.guard';
     PetEditComponent,
     HomeComponent,
     ConfirmDialog,
+    NotFoundComponent,
   ],
   imports: [
     BrowserModule,

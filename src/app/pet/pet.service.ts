@@ -13,19 +13,16 @@ export class PetService {
   pets: Observable<Pet[]>;
   userUid: string;
 
-  constructor(private db: AngularFireDatabase, private authService: AuthService) {
+  constructor(private db: AngularFireDatabase) {
   }
 
-  getPet(petKey: string) {
-    return this.db.object(`${this.authService.user.uid}/pets/${petKey}`).valueChanges()
+  getPet(petKey: string, userUid: string) {
+    return this.db.object(`${userUid}/pets/${petKey}`).valueChanges()
       .catch(this.errorHandler);
   }
 
-  getPets() {
-    this.petsRef = this.db.list(`${this.authService.user.uid}/pets`);
-    this.pets = this.petsRef.snapshotChanges().map(changes => {
-      return changes.map(c => ({ key: c.payload.key, ...c.payload.val() }));
-    });
+  getPets(userUid: string) {
+    this.updatePetRef(userUid);
     return this.pets.catch(this.errorHandler);
   }
 
@@ -55,6 +52,13 @@ export class PetService {
     const storageRef = firebase.storage().ref(`pets/${petImgId}`);
     storageRef.delete()
       .then(_ => console.log("Success, image deleted."));
+  }
+
+  updatePetRef(userUid: string) {
+    this.petsRef = this.db.list(`${userUid}/pets`);
+    this.pets = this.petsRef.snapshotChanges().map(changes => {
+      return changes.map(c => ({ key: c.payload.key, ...c.payload.val() }));
+    });
   }
 
   private errorHandler(error) {
