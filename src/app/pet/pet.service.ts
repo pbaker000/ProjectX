@@ -5,26 +5,28 @@ import { AngularFireDatabase, AngularFireObject, AngularFireList } from 'angular
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/from';
 import 'rxjs/add/operator/catch';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable()
 export class PetService {
-  pet: AngularFireObject<Pet>;
   petsRef: AngularFireList<Pet>;
   pets: Observable<Pet[]>;
+  userUid: string;
 
-  mypets: Observable<Pet[]>;
+  constructor(private db: AngularFireDatabase, private authService: AuthService) {
+    authService.user$.subscribe(user => {
+      this.userUid = user.uid;
 
-  constructor(private db: AngularFireDatabase) {
-    this.pet = this.db.object('pet');
-
-    this.petsRef = this.db.list(`pets`);
-    this.pets = this.petsRef.snapshotChanges().map(changes => {
-      return changes.map(c => ({ key: c.payload.key, ...c.payload.val() }));
+      this.petsRef = this.db.list(`${user.uid}/pets`);
+      this.pets = this.petsRef.snapshotChanges().map(changes => {
+        return changes.map(c => ({ key: c.payload.key, ...c.payload.val() }));
+      });
     });
+
   }
 
   getPet(petKey: string) {
-    return this.db.object(`pets/${petKey}`).valueChanges()
+    return this.db.object(`${this.userUid}/pets/${petKey}`).valueChanges()
       .catch(this.errorHandler);
   }
 
@@ -38,10 +40,8 @@ export class PetService {
       .then(x => {
         console.log('Success, saved. Key: ', x.key);
       });
-      //.catch(error => console.log(error));
+    //.catch(error => console.log(error));
   }
-
-
 
   editPet(pet: Pet, petKey: string) {
     return this.petsRef.update(petKey, pet)
@@ -58,7 +58,7 @@ export class PetService {
   }
 
   deleteImage(petImgId: string) {
-    const storageRef = firebase.storage().ref(`pets/${petImgId}`);
+    const storageRef = firebase.storage().ref(`${this.userUid}/pets/${petImgId}`);
     storageRef.delete()
       .then(_ => console.log("Success, image deleted."));
   }

@@ -14,7 +14,7 @@
             <span>{{isNewPet ? "Save" : "Save Changes"}}</span>
         </button>
         <button mat-button (click)="cancel()">Cancel</button>
-        <button *ngIf="!isNewPet" mat-button (click)="openDialog()">Delete</button>
+        <button *ngIf="!isNewPet" mat-button (click)="petRemoveDialog()">Delete</button>
     </mat-card-actions>
 
 </mat-card>

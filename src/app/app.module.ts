@@ -11,6 +11,7 @@ import { MatToolbarModule } from '@angular/material';
 import { MatIconModule } from '@angular/material';
 import { MatButtonModule } from '@angular/material';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { environment } from '../environments/environment';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { AppRoutingModule } from './app-routing.module';
@@ -23,17 +24,12 @@ import { MatInputModule } from '@angular/material';
 import { MatDialogModule } from '@angular/material';
 import { DialogService } from './dialog.service';
 import { ConfirmDialog } from './confirm-dialog/confirm-dialog.component';
+import { AngularFireAuthModule } from 'angularfire2/auth';
 import { Ng2ImgToolsModule } from 'ng2-img-tools'; 
 //import { ImageCropperComponent, CropperSettings } from 'ng2-img-cropper';
+import { AuthService } from './auth/auth.service';
+import { AuthGuard } from './auth/auth.guard';
 
-const firebaseConfig = {
-  apiKey: "AIzaSyB-JUvVxJTK-yHp9P91eThua2_8XVz2NFs",
-  authDomain: "projectx-86abc.firebaseapp.com",
-  databaseURL: "https://projectx-86abc.firebaseio.com",
-  projectId: "projectx-86abc",
-  storageBucket: "projectx-86abc.appspot.com",
-  messagingSenderId: "677894490136"
-};
 
 @NgModule({
   declarations: [
@@ -55,15 +51,16 @@ const firebaseConfig = {
     MatIconModule,
     AngularFireDatabaseModule,
     AppRoutingModule,
-    AngularFireModule.initializeApp(firebaseConfig),
+    AngularFireModule.initializeApp(environment.firebaseConfig),
     MatCardModule,
     MatInputModule,
     MatDialogModule,
-    Ng2ImgToolsModule
+    Ng2ImgToolsModule,
+    AngularFireAuthModule
     //ImageCropperComponent,
     //CropperSettings
   ],
-  providers: [PetService, DialogService],
+  providers: [AuthGuard, AuthService, PetService, DialogService],
   bootstrap: [AppComponent],
   entryComponents: [ConfirmDialog]
 })

@@ -68,12 +68,10 @@ export class PetEditComponent implements OnInit {
   }
 
   getErrorMessage() {
-    console.log(this.name.hasError('required'));
-
     return this.name.hasError('required') ? 'You must enter a pet name' : '';
   }
 
-  openDialog() {
+  petRemoveDialog() {
     this.dialogService
       .confirm('Remove Pet', 'Are you sure you want to remove this pet?')
       .subscribe(res => {

@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { AngularFireDatabase } from 'angularfire2/database';
+import { DialogService } from './dialog.service';
+import { AuthService } from './auth/auth.service';
+
 
 @Component({
   selector: 'app-root',
@@ -10,14 +12,22 @@ import { AngularFireDatabase } from 'angularfire2/database';
 export class AppComponent {
   title = 'app';
 
-  constructor(private router: Router, private db: AngularFireDatabase)
-  {
-    this.db.object('connected').valueChanges().subscribe(console.log);
+  constructor(private router: Router,
+    public authService: AuthService,
+    private dialogService: DialogService) {
   }
-  onClick(): void
-  {
+  onClick(): void {
     this.router.navigate(['/home'])
   }
-  
+
+  logoutDialog() {
+    this.dialogService
+      .confirm('Logout', 'Are you sure you want to logout?')
+      .subscribe(res => {
+        if (res) {
+          this.authService.logout();
+        }
+      });
+  }
 }
 
