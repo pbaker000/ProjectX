@@ -12,6 +12,7 @@ import { Ng2ImgToolsService } from 'ng2-img-tools';
 import { Exif } from 'ng2-img-cropper/src/exif'
 import { FormControl, Validators } from '@angular/forms';
 import { AuthService } from '../../auth/auth.service';
+import { Med } from '../../med';
 
 
 @Component({
@@ -24,8 +25,9 @@ export class PetEditComponent implements OnInit {
   petKey: string;
   pet$: Observable<Pet>;
   pet: Pet;
-  buttonDisabled: boolean;
+  imageUploading: boolean;
   name = new FormControl('', [Validators.required]);
+  medName = new FormControl('', [Validators.required]);
 
 
   constructor(private router: Router,
@@ -44,7 +46,7 @@ export class PetEditComponent implements OnInit {
 
     this.pet$.subscribe(pet => {
       this.pet = pet;
-      this.isNewPet && (pet.imgId = UUID.UUID());
+      this.isNewPet && (pet.imgId = UUID.UUID()); // if it is a new pet we create a uid for the img
       // setTimeout(() => {
       //   let img1 = document.getElementById("img1") as HTMLImageElement;
 
@@ -69,17 +71,20 @@ export class PetEditComponent implements OnInit {
 
   }
 
-  getErrorMessage() {
-    return this.name.hasError('required') ? 'You must enter a pet name' : '';
+  getErrorMessage(selector) {
+    switch (selector) {
+      case "name":
+        return this.name.hasError('required') ? 'You must enter a pet name' : '';
+      case "medName":
+        return this.medName.hasError('required') ? 'You must enter a medication name' : '';
+    }
   }
 
   petRemoveDialog() {
     this.dialogService
       .confirm('Remove Pet', 'Are you sure you want to remove this pet?')
       .subscribe(res => {
-        if (res) {
-          this.removePet();
-        }
+        res && this.removePet(); //if the res is true we remove
       });
   }
 
@@ -87,14 +92,19 @@ export class PetEditComponent implements OnInit {
     this.pet$ = this.petService.getPet(this.petKey, this.authService.user.uid);
   }
 
+  addMed(pet: Pet) {
+    !pet.meds && (pet.meds = []);
+    pet.meds.push(new Med("Medication " + (pet.meds.length + 1)));
+  }
+
   uploadImage(event: any, pet: Pet) {
-    this.buttonDisabled = true;
+    this.imageUploading = true;
     const file = event.srcElement.files[0];
     const storageRef = firebase.storage().ref(`pets/${pet.imgId}`);
     storageRef.put(file)
       .then(uploadTask => {
         pet.imageUrl = uploadTask.downloadURL;
-        this.buttonDisabled = false;
+        this.imageUploading = false;
         console.log("Success, image uploaded. URL: ", pet.imageUrl);
       });
   }
@@ -113,11 +123,12 @@ export class PetEditComponent implements OnInit {
   }
 
   cancel() {
+    this.isNewPet && this.pet.imageUrl && this.petService.deleteImage(this.pet.imgId) //if new pet and have imgUrl we delete it
     this.router.navigate(['pet-list']);
   }
 
   finished() {
-    return this.name.hasError('required') || this.buttonDisabled;
+    return /*this.medName.hasError('required') || */ this.name.hasError('required') || this.imageUploading;
   }
 
 }

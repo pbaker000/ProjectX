@@ -1,7 +1,7 @@
 button[mat-fab] {
     position: fixed;
-    bottom: 25px;
-    right: 25px;
+    top: 80px;
+    right: 35px;
 }
 
 .card-container {

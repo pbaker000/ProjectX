@@ -30,6 +30,7 @@ import { Ng2ImgToolsModule } from 'ng2-img-tools';
 import { AuthService } from './auth/auth.service';
 import { AuthGuard } from './auth/auth.guard';
 import { NotFoundComponent } from './not-found/not-found.component';
+import { MatExpansionModule } from '@angular/material'
 
 
 @NgModule({
@@ -58,7 +59,8 @@ import { NotFoundComponent } from './not-found/not-found.component';
     MatInputModule,
     MatDialogModule,
     Ng2ImgToolsModule,
-    AngularFireAuthModule
+    AngularFireAuthModule,
+    MatExpansionModule
     //ImageCropperComponent,
     //CropperSettings
   ],

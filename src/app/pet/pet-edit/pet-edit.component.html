@@ -1,20 +1,61 @@
 <mat-card *ngIf="pet$ | async as pet">
-    <mat-card-title>Edit Your Pet</mat-card-title>
-    <img id="img1" [src]="pet.imageUrl" onerror="this.src='./assets/images/placeholder.png';" 
-        alt="Select a picture for your pet">
-    <mat-form-field>
-        <input matInput placeholder="Enter your pet's name" [formControl]="name" required [(ngModel)]="pet.name">
-        <mat-error *ngIf="name.invalid">{{getErrorMessage()}}</mat-error>
-    </mat-form-field>
-    <span class="input-photo">
-        <input type="file" (change)="uploadImage($event, pet)">
-    </span>
+    <mat-card-title>
+        Edit Your Pet
+    </mat-card-title>
+
+    <div>
+        <img id="img1" [src]="pet.imageUrl" onerror="this.src='./assets/images/placeholder.png';" alt="Select a picture for your pet">
+
+        <mat-form-field>
+            <input matInput placeholder="Enter your pet's name" [formControl]="name" required [(ngModel)]="pet.name">
+            <mat-error *ngIf="name.invalid">{{getErrorMessage("name")}}</mat-error>
+        </mat-form-field>
+    </div>
+
+    <div>
+        <span class="input-photo">
+            <input type="file" (change)="uploadImage($event, pet)">
+        </span>
+    </div>
+    <br>
+    <br>
+    <hr>
+    <br>
+
+    <div>
+        <span style="font-size: 16pt; float: left; margin-top: 5px;">
+            Medication &nbsp;&nbsp;
+        </span>
+        <button mat-raised-button color="primary" (click)="addMed(pet)">Add</button>
+    </div>
+    <br>
+
+    <mat-accordion>
+        <mat-expansion-panel *ngFor=" let med of pet.meds" hideToggle="true">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    {{med.name}}
+                </mat-panel-title>                
+            </mat-expansion-panel-header>
+
+            
+            <mat-form-field>
+                <input matInput [(ngModel)]="med.name">
+                <mat-error *ngIf="medName.invalid">{{getErrorMessage("medName")}}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field>
+                <input matInput type="number" min="1" placeholder="Age">
+            </mat-form-field>
+
+        </mat-expansion-panel>
+    </mat-accordion>
+
     <mat-card-actions align="right">
         <button mat-button [disabled]="finished()" (click)="savePet(pet)">
             <span>{{isNewPet ? "Save" : "Save Changes"}}</span>
         </button>
-        <button mat-button (click)="cancel()">Cancel</button>
+        <button mat-button [disabled]="imageUploading" (click)="cancel()">Cancel</button>
         <button *ngIf="!isNewPet" mat-button (click)="petRemoveDialog()">Delete</button>
     </mat-card-actions>
-
 </mat-card>

@@ -1,8 +1,3 @@
-label{
-    margin-right: 10px;
-    display: inline-block;
-}
-
 img {
     text-align: center;
     display: block; 
@@ -18,10 +13,15 @@ img {
 mat-card {
     width: 700px;
     box-sizing: border-box;
-    margin: 16px;
+    margin: 15px;
+}
+
+.medication-text{
+    font-size: 15px;
 }
 
 .input-photo {
     clear: left;
     display: block;
 }
+
