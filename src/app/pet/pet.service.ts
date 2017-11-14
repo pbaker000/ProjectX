@@ -6,17 +6,37 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/from';
 import 'rxjs/add/operator/catch';
 import { AuthService } from '../auth/auth.service';
+import { FormControl, Validators } from '@angular/forms';
+import { UUID } from 'angular2-uuid';
+import { Med } from '../med';
 
 @Injectable()
 export class PetService {
   petsRef: AngularFireList<Pet>;
   pets: Observable<Pet[]>;
   userUid: string;
+  
+  medFC: Map<string, FormControl>;
 
   constructor(private db: AngularFireDatabase) {
+    !this.medFC && (this.medFC = new Map<string, FormControl>());
+  }
+
+  getFormControl(id: string)
+  {
+    return this.medFC.get(id);
+  }
+
+  addMed(pet: Pet)
+  {
+    !pet.meds && (pet.meds = []);
+    let medId = UUID.UUID();
+    this.medFC.set(medId, new FormControl('', [Validators.required, Validators.pattern(".*\\S.*")]))
+    pet.meds.push(new Med("Medication " + (pet.meds.length + 1), medId));
   }
 
   getPet(petKey: string, userUid: string) {
+    this.updatePetRef(userUid);
     return this.db.object(`${userUid}/pets/${petKey}`).valueChanges()
       .catch(this.errorHandler);
   }

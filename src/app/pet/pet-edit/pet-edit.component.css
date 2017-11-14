@@ -20,6 +20,10 @@ mat-card {
     font-size: 15px;
 }
 
+.container-parent:not(:focus-within) .expansion-title::ng-deep .mat-input-underline{
+    display: none;
+}
+
 .input-photo {
     clear: left;
     display: block;

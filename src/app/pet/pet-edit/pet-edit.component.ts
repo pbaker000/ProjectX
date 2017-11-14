@@ -7,9 +7,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import 'rxjs/add/observable/of';
 import { DialogService } from '../../dialog.service';
 import { UUID } from 'angular2-uuid';
-import { EXIF } from 'exif-js';
-import { Ng2ImgToolsService } from 'ng2-img-tools';
-import { Exif } from 'ng2-img-cropper/src/exif'
 import { FormControl, Validators } from '@angular/forms';
 import { AuthService } from '../../auth/auth.service';
 import { Med } from '../../med';
@@ -26,16 +23,13 @@ export class PetEditComponent implements OnInit {
   pet$: Observable<Pet>;
   pet: Pet;
   imageUploading: boolean;
-  name = new FormControl('', [Validators.required]);
-  medName = new FormControl('', [Validators.required]);
-
+  name = new FormControl('', [Validators.required, Validators.pattern(".*\\S.*")]);
 
   constructor(private router: Router,
     private activatedRoute: ActivatedRoute,
     private petService: PetService,
     private dialogService: DialogService,
-    private authService: AuthService
-    /*private ng2ImgToolsService: Ng2ImgToolsService*/) {
+    private authService: AuthService) {
   }
 
   ngOnInit() {
@@ -47,54 +41,12 @@ export class PetEditComponent implements OnInit {
     this.pet$.subscribe(pet => {
       this.pet = pet;
       this.isNewPet && (pet.imgId = UUID.UUID()); // if it is a new pet we create a uid for the img
-      // setTimeout(() => {
-      //   let img1 = document.getElementById("img1") as HTMLImageElement;
-
-      //   Exif.getData(img1, () => {
-      //     let orientation = Exif.getTag(img1, 'Orientation');
-      //     console.log(orientation);
-
-      //   });
-      //this.ng2ImgToolsService.getEXIFOrientedImage(img1).then((img) => {
-      //this.img2 = img.src;
-      //console.log("hello");
-
-
-      //   console.log(img1);
-      //   EXIF.getData(img1,() => {
-      //     //let orientation = EXIF.getTag(img1, "Orientation");
-      //     console.log("hello");
-      //   });
-      //}, 100);
-
     });
 
   }
 
-  getErrorMessage(selector) {
-    switch (selector) {
-      case "name":
-        return this.name.hasError('required') ? 'You must enter a pet name' : '';
-      case "medName":
-        return this.medName.hasError('required') ? 'You must enter a medication name' : '';
-    }
-  }
-
-  petRemoveDialog() {
-    this.dialogService
-      .confirm('Remove Pet', 'Are you sure you want to remove this pet?')
-      .subscribe(res => {
-        res && this.removePet(); //if the res is true we remove
-      });
-  }
-
   getPet() {
     this.pet$ = this.petService.getPet(this.petKey, this.authService.user.uid);
-  }
-
-  addMed(pet: Pet) {
-    !pet.meds && (pet.meds = []);
-    pet.meds.push(new Med("Medication " + (pet.meds.length + 1)));
   }
 
   uploadImage(event: any, pet: Pet) {
@@ -128,7 +80,65 @@ export class PetEditComponent implements OnInit {
   }
 
   finished() {
-    return /*this.medName.hasError('required') || */ this.name.hasError('required') || this.imageUploading;
+    //let error = false;
+    //this.medFC.forEach(formControl => {
+    //  formControl.hasError('required') && (error = true);
+    //})
+
+    return this.name.hasError('required') || this.imageUploading;
   }
 
+  addMed(pet: Pet) {
+    this.petService.addMed(pet);
+  }
+
+  removeMed() {
+    console.log("med");
+  }
+
+  removeDialog(selector: string) {
+    let title = "";
+    let dialog = "";
+    let func = null;
+
+    switch (selector) {
+      case "pet":
+        title = "Remove Pet";
+        dialog = "Are you sure you want to remove this pet?"
+        func = this.removePet;
+        break;
+      case "med":
+        title = "Remove Medication";
+        dialog = "Are you sure you want to remove this medication?"
+        func = this.removeMed;
+        break;
+    }
+
+    this.dialogService
+      .confirm(title, dialog)
+      .subscribe(res => {
+        res && func.call(func); //if the res is true we remove
+      });
+  }
+
+  getFormControl(medId: string) {
+    return this.petService.getFormControl(medId);
+  }
+
+  getMedErrorMessage(medId: string) {
+    let fc = this.petService.getFormControl(medId);
+    console.log(fc);
+    
+    return (fc.hasError('required') || fc.hasError('pattern'))
+      ? ((document.getElementById(medId).className = "no-class") && 'You must enter a valid medication name')
+      : ((document.getElementById(medId).className = "container-parent") && '');
+  }
+
+  getNameErrorMessage() {
+    return this.name.hasError('required') || this.name.hasError('pattern') ? 'You must enter a valid pet name' : '';
+  }
+
+  disableExtension(e: Event) {
+    e.stopPropagation();
+  }
 }
