@@ -22,6 +22,6 @@ export class PetListComponent implements OnInit {
   }
   getPets()
   {
-    this.pets$ = this.petService.getPets(this.authService.user.uid);
+    this.pets$ = this.petService.getPets();
   }
 }

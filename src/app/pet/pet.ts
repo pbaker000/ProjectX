@@ -3,5 +3,6 @@ export interface Pet {
     name: string;
     imageUrl?: string;
     imgId: string;
-    meds: Med[];
+    meds: Array<Med>;
+    
 }

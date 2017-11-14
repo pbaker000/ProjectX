@@ -6,7 +6,7 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/from';
 import 'rxjs/add/operator/catch';
 import { AuthService } from '../auth/auth.service';
-import { FormControl, Validators } from '@angular/forms';
+import { FormControl, Validators, FormGroup, FormArray } from '@angular/forms';
 import { UUID } from 'angular2-uuid';
 import { Med } from '../med';
 
@@ -14,36 +14,64 @@ import { Med } from '../med';
 export class PetService {
   petsRef: AngularFireList<Pet>;
   pets: Observable<Pet[]>;
-  userUid: string;
-  
-  medFC: Map<string, FormControl>;
+  user: firebase.User;
 
-  constructor(private db: AngularFireDatabase) {
-    !this.medFC && (this.medFC = new Map<string, FormControl>());
+  constructor(private db: AngularFireDatabase, private authService: AuthService) {
+    authService.user$.subscribe(user => {
+      if (user) //if the user doesn't exist the subscribe breaks
+      {
+        this.user = user;
+        this.petsRef = this.db.list(`${user.uid}/pets`);
+        this.pets = this.petsRef.snapshotChanges().map(changes => {
+          return changes.map(c => ({ key: c.payload.key, ...c.payload.val() }));
+        });
+      }
+    });
   }
 
-  getFormControl(id: string)
+  addMed(pet: Pet) {
+    pet.meds.push(new Med(this.getMedName(pet)));
+  }
+
+  removeMed(pet: Pet, index: number) {
+    pet.meds.splice(index, 1);
+  }
+
+  getMedName(pet: Pet)
   {
-    return this.medFC.get(id);
+    let tempArray = pet.meds.slice();
+
+    tempArray.sort((med1, med2) => {
+      if (med1.name > med2.name) {
+          return 1;
+      }
+      if (med1.name < med2.name) {
+          return -1;
+      }
+      return 0;
+    });
+
+    let max = 1;
+    let medName = "Medication " + max;
+    
+    tempArray.forEach(med => {
+      if (med.name.startsWith("Medication")) {
+        if (med.name == "Medication " + max) {
+          max += 1;
+          medName = "Medication " + max;
+        }
+      }
+    });
+
+    return medName;
   }
 
-  addMed(pet: Pet)
-  {
-    !pet.meds && (pet.meds = []);
-    let medId = UUID.UUID();
-    this.medFC.set(medId, new FormControl('', [Validators.required, Validators.pattern(".*\\S.*")]))
-    pet.meds.push(new Med("Medication " + (pet.meds.length + 1), medId));
+  getPet(petKey: string) {
+    return this.db.object(`${this.user.uid}/pets/${petKey}`).valueChanges<Pet>();
   }
 
-  getPet(petKey: string, userUid: string) {
-    this.updatePetRef(userUid);
-    return this.db.object(`${userUid}/pets/${petKey}`).valueChanges()
-      .catch(this.errorHandler);
-  }
-
-  getPets(userUid: string) {
-    this.updatePetRef(userUid);
-    return this.pets.catch(this.errorHandler);
+  getPets() {
+    return this.pets;
   }
 
   savePet(pet: Pet) {
@@ -51,38 +79,24 @@ export class PetService {
       .then(x => {
         console.log('Success, saved. Key: ', x.key);
       });
-    //.catch(error => console.log(error));
   }
 
   editPet(pet: Pet, petKey: string) {
     return this.petsRef.update(petKey, pet)
       .then(_ => console.log('Success, updated'))
-      .catch(error => console.log(error));
   }
-  removePet(petKey: string, petImgId: string) {
 
-    this.deleteImage(petImgId);
+  removePet(petKey: string, petImgId: string, petImgUrl: string) {
+
+    petImgUrl && this.deleteImage(petImgId);
 
     return this.petsRef.remove(petKey)
       .then(x => console.log('Success, deleted'))
-      .catch(error => console.log(error));
   }
 
   deleteImage(petImgId: string) {
     const storageRef = firebase.storage().ref(`pets/${petImgId}`);
     storageRef.delete()
       .then(_ => console.log("Success, image deleted."));
-  }
-
-  updatePetRef(userUid: string) {
-    this.petsRef = this.db.list(`${userUid}/pets`);
-    this.pets = this.petsRef.snapshotChanges().map(changes => {
-      return changes.map(c => ({ key: c.payload.key, ...c.payload.val() }));
-    });
-  }
-
-  private errorHandler(error) {
-    console.log(error);
-    return Observable.throw(error);
   }
 }
