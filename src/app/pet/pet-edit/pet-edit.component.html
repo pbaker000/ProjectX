@@ -5,18 +5,23 @@
 
     <div>
         <img id="img1" [src]="pet.imageUrl" onerror="this.src='./assets/images/placeholder.png';" alt="Select a picture for your pet">
-
-        <mat-form-field [floatPlaceholder]="getPlaceholder()">
-            <input matInput placeholder="Enter your pet's name" [formControl]="this.myForm.controls['name']" required pattern [(ngModel)]="pet.name">
+        <div class="input-photo">
+            <input type="file" (change)="uploadImage($event, pet)">
+        </div>
+        <mat-form-field>
+            <input matInput [placeholder]="getPlaceholder('name')" formControlName="name" required pattern [(ngModel)]="pet.name">
             <mat-error>{{getNameErrorMessage()}}</mat-error>
         </mat-form-field>
+        <mat-form-field>
+            <input matInput type="number" [placeholder]="getPlaceholder('age')" formControlName="age" [(ngModel)]="pet.age">
+        </mat-form-field>
+        <mat-form-field>
+            <textarea matInput type="text-area" placeholder="Additional Information" formControlName="info" [(ngModel)]="pet.info"></textarea>
+        </mat-form-field>
     </div>
-
-    <div>
-        <span class="input-photo">
-            <input type="file" (change)="uploadImage($event, pet)">
-        </span>
-    </div>
+    <br>
+    <br>
+    <br>
     <br>
     <br>
     <hr>

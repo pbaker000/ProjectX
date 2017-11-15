@@ -26,7 +26,9 @@ export class PetEditComponent implements OnInit, OnDestroy, AfterViewChecked {
   imageUploading: boolean;
   myForm = new FormGroup({
     'name': new FormControl('', [Validators.required, Validators.pattern(".*\\S.*"), Validators.maxLength(20)]),
-    'medications': new FormArray([]),
+    'age': new FormControl(),
+    'info': new FormControl(),
+    'medications': new FormArray([])
   });
   petSub: ISubscription;
 
@@ -57,7 +59,7 @@ export class PetEditComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.changeDetectionRef.detectChanges(); // manually call detect changes in order to fix Expression Changed Error
   }
 
-  petInit(pet: Pet) {    
+  petInit(pet: Pet) {
     this.isNewPet && (pet.imgId = UUID.UUID()); // if it is a new pet we create a uid for the img
     pet && pet.meds && pet.meds.forEach(med => this.addMedFC());
   }
@@ -133,9 +135,16 @@ export class PetEditComponent implements OnInit, OnDestroy, AfterViewChecked {
     return this.myForm.invalid || this.imageUploading;
   }
 
-  getPlaceholder()
-  {
-    return this.isNewPet ? "always" : "never"; 
+
+  getPlaceholder(selector: string) {
+    switch (selector) {
+      case "name":
+        return this.isNewPet ? "Enter your pet's name" : "Pet Name";
+      case "age":
+        return this.isNewPet ? "Enter your pet's age" : "Pet Age";
+      default:
+        return "error";
+    }
   }
 
   disableExtension(e: Event) {

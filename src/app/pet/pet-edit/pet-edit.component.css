@@ -25,7 +25,8 @@ mat-card {
 }
 
 .input-photo {
-    clear: left;
+    clear:left;
+    float: left;
     display: block;
 }
 
