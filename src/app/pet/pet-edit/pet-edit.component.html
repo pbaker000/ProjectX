@@ -6,7 +6,7 @@
     <div>
         <img id="img1" [src]="pet.imageUrl" onerror="this.src='./assets/images/placeholder.png';" alt="Select a picture for your pet">
 
-        <mat-form-field>
+        <mat-form-field [floatPlaceholder]="getPlaceholder()">
             <input matInput placeholder="Enter your pet's name" [formControl]="this.myForm.controls['name']" required pattern [(ngModel)]="pet.name">
             <mat-error>{{getNameErrorMessage()}}</mat-error>
         </mat-form-field>

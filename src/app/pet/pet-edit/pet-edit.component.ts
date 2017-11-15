@@ -25,8 +25,8 @@ export class PetEditComponent implements OnInit, OnDestroy, AfterViewChecked {
   pet: Pet;
   imageUploading: boolean;
   myForm = new FormGroup({
-    'name': new FormControl('', [Validators.required, Validators.pattern(".*\\S.*")]),
-    'medications': new FormArray([])
+    'name': new FormControl('', [Validators.required, Validators.pattern(".*\\S.*"), Validators.maxLength(20)]),
+    'medications': new FormArray([]),
   });
   petSub: ISubscription;
 
@@ -57,9 +57,9 @@ export class PetEditComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.changeDetectionRef.detectChanges(); // manually call detect changes in order to fix Expression Changed Error
   }
 
-  petInit(pet: Pet) {
-    this.isNewPet && (pet.imgId = UUID.UUID()) && (pet.meds = []); // if it is a new pet we create a uid for the img
-    pet && pet.meds.forEach(med => this.addMedFC());
+  petInit(pet: Pet) {    
+    this.isNewPet && (pet.imgId = UUID.UUID()); // if it is a new pet we create a uid for the img
+    pet && pet.meds && pet.meds.forEach(med => this.addMedFC());
   }
 
   getPet() {
@@ -83,6 +83,7 @@ export class PetEditComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   addMed(pet: Pet) {
+    !pet.meds && (pet.meds = []);
     this.addMedFC();
     this.petService.addMed(pet);
   }
@@ -105,7 +106,7 @@ export class PetEditComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   addMedFC() {
     (<FormArray>this.myForm.get('medications')) //add a new control form
-      .push(new FormControl('', [Validators.required, Validators.pattern(".*\\S.*")]));
+      .push(new FormControl('', [Validators.required, Validators.pattern(".*\\S.*"), Validators.maxLength(25)]));
   }
 
   savePet(pet: Pet) {
@@ -130,6 +131,11 @@ export class PetEditComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   finished() {
     return this.myForm.invalid || this.imageUploading;
+  }
+
+  getPlaceholder()
+  {
+    return this.isNewPet ? "always" : "never"; 
   }
 
   disableExtension(e: Event) {

@@ -1,11 +1,18 @@
 <div class="card-container">
     <mat-card *ngFor=" let pet of pets$ | async">
-        <img mat-card-image [src]="pet.imageUrl" onerror="this.src='./assets/images/placeholder.png';"
-                alt="Photo of your pet">
-        <mat-card-content fxLayoutAlign="space-between center">
+        <img mat-card-image [src]="pet.imageUrl" onerror="this.src='./assets/images/placeholder.png';" alt="Photo of your pet">
+        <mat-card-content>
+            <div style="padding-bottom: 3%">
+                <div style="padding-left: 73%; position: absolute">
+                    <button mat-button style="min-width: 10%" [routerLink]="['/pet-edit', pet.key]">
+                        <mat-icon>edit</mat-icon>
+                    </button>
+                </div>
+            </div>
             <span>{{pet.name}}</span>
-            <button mat-button [routerLink]="['/pet-edit', pet.key]">Edit</button>
         </mat-card-content>
     </mat-card>
 </div>
-<button mat-fab [routerLink]="['/pet-edit/new']"><mat-icon>add</mat-icon></button>
+<button mat-fab [routerLink]="['/pet-edit/new']">
+    <mat-icon>add</mat-icon>
+</button>
