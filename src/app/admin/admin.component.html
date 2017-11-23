@@ -29,9 +29,6 @@
         <br>
         <br>
         <div *ngFor="let type of doseTypes; let i=index; trackBy:customTrackBy">
-          <mat-form-field style="padding: 0 10px 0 0">
-            <input matInput placeholder="Option value" [(ngModel)]="doseTypes[i].value">
-          </mat-form-field>
           <mat-form-field style="padding: 0 99px 0 0">
               <input matInput placeholder="View value" [(ngModel)]="doseTypes[i].viewValue">
             </mat-form-field>
@@ -48,9 +45,6 @@
           <br>
           <br>
           <div *ngFor="let type of durTypes; let i=index; trackBy:customTrackBy">
-            <mat-form-field style="padding: 0 10px 0 0">
-              <input matInput placeholder="Option value" [(ngModel)]="durTypes[i].value">
-            </mat-form-field>
             <mat-form-field style="padding: 0 99px 0 0">
                 <input matInput placeholder="View value" [(ngModel)]="durTypes[i].viewValue">
               </mat-form-field>

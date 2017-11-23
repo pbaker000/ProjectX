@@ -21,20 +21,17 @@ export class AdminComponent implements OnInit {
 
   ngOnInit() {
     this.db.list(`admin/data`).valueChanges<string[]>()
-    .subscribe(data => {
+      .subscribe(data => {
         this.data = data;
         this.demoMeds = data[0];
         this.doseTypes = data[1];
-        console.log(this.doseTypes);
-        
         this.durTypes = data[2];
       });
   }
 
   modify(selector: string, isAdd: boolean, index?: number) {
     let selected: any;
-    switch(selector)
-    {
+    switch (selector) {
       case 'demo':
         selected = this.demoMeds;
         break;
@@ -45,14 +42,22 @@ export class AdminComponent implements OnInit {
         selected = this.durTypes;
         break;
     }
-    isAdd ? selector == 'demo' ? selected.push('') 
-      : selected.push({value: '', viewValue: ''}) 
+    isAdd ? selector == 'demo' ? selected.push('')
+      : selected.push({ value: '', viewValue: '' })
       : selected.splice(index, 1);
   }
 
   save() {
+    this.setValue(this.doseTypes);
+    this.setValue(this.durTypes);
     this.db.list(`admin`).set(`data`, this.data)
-    .then(_ => console.log('Success, saved'));
+      .then(_ => console.log('Success, saved'));
+  }
+
+  setValue(types: any) {
+    for (let i in types) {
+      types[i].value = types[i].viewValue.toLowerCase() + "-" + i;
+    }
   }
 
   customTrackBy(index: number, obj: any): any {
