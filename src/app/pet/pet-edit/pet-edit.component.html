@@ -1,12 +1,11 @@
-<mat-card [formGroup]="myForm" *ngIf="pet$ | async as pet">
+<mat-card *ngIf="pet">
     <mat-card-title>
         Edit Your Pet
     </mat-card-title>
-
-    <div>
-        <img id="img1" [src]="pet.imageUrl" onerror="this.src='./assets/images/placeholder.png';" alt="Select a picture for your pet">
+    <div [formGroup]="myForm">
+        <img id="img1" [src]="pet.imgUrl" onerror="this.src='./assets/images/placeholder.png';" alt="Select a picture for your pet">
         <div class="input-photo">
-            <input type="file" (change)="uploadImage($event, pet)">
+            <input type="file" (change)="prevImgUpload($event, pet)">
         </div>
         <mat-form-field>
             <input matInput [placeholder]="getPlaceholder('name')" formControlName="name" required pattern [(ngModel)]="pet.name">
@@ -34,42 +33,62 @@
         <button mat-raised-button color="primary" (click)="addMed(pet)">Add</button>
     </div>
     <br>
-    <mat-accordion formArrayName="medications">
+    <mat-accordion>
         <mat-expansion-panel *ngFor="let med of pet.meds; let i=index">
-            <mat-expansion-panel-header>
-                <div class="container-parent" [id]="i">
-                    <mat-form-field class="expansion-title" floatPlaceholder="never">
-                        <input (click)="disableExtension($event)" (keydown.space)="disableExtension($event)" (keyup.space)="disableExtension($event)"
-                            matInput placeholder="Medication Name" [formControlName]="i" required pattern [(ngModel)]="med.name">
-                    </mat-form-field>
-                </div>
-                <div style="padding: 18px 0 0 18px">
-                    <mat-error>{{getMedErrorMessage(i)}}</mat-error>
-                </div>
-            </mat-expansion-panel-header>
-            <mat-form-field>
-                <input matInput type="number" min="1" placeholder="Dosage">
+                <mat-expansion-panel-header [formGroup]="myForm">
+                    <div formArrayName="medications" class="container-parent" [id]="i">
+                        <mat-form-field class="expansion-title" floatPlaceholder="never">
+                            <input (click)="disableExtension($event)" (keydown.space)="disableExtension($event)" (keyup.space)="disableExtension($event)"
+                            matInput placeholder="Medication Name" [formControlName]="i" required pattern [(ngModel)]="med.name"
+                            [matAutocomplete]="auto">
+                            <mat-autocomplete #auto="matAutocomplete">
+                                <mat-option *ngFor="let option of filteredOptions[i] | async" [value]="option">
+                                    {{option}}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    <div style="padding: 18px 0 0 18px">
+                        <mat-error>{{getMedErrorMessage(i)}}</mat-error>
+                    </div>
+                </mat-expansion-panel-header>
+            <mat-form-field style="width: 85px">
+                <input matInput type="number" min="1" placeholder="# of Doses" [(ngModel)]="med.dosage">
             </mat-form-field>
             <br>
             <mat-form-field>
-                <input matInput type="number" min="1" placeholder="Frequency">
+                <span matPrefix>{{med.dosage ? med.dosage + "&nbsp;&nbsp;": ""}}</span>
+                <mat-select placeholder="Dose Type" [(ngModel)]="med.doseType">
+                    <mat-option *ngFor="let dose of doseTypes" [value]="dose.value">
+                        {{ dose.viewValue }}
+                    </mat-option>
+                </mat-select>
             </mat-form-field>
             <br>
-            <mat-form-field style="width: 100%">
-                <textarea matInput type="textarea" placeholder="Additional Info"></textarea>
+            <label>every</label>
+            <br>
+            <mat-form-field style="width: 35px; padding-top: 5px">
+                <input matInput type="number" min="1" max="60" placeholder="#" [(ngModel)]="med.duration">
             </mat-form-field>
+            <mat-form-field style="width: 160px">
+                <mat-select placeholder="Duration" [(ngModel)]="med.durType">
+                    <mat-option *ngFor="let dur of durTypes" [value]="dur.value" >
+                        {{ dur.viewValue }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <br>
             <mat-action-row align="right" style="padding-right: 15px">
                 <button mat-raised-button color="warn" (click)="removeMed(pet, i)">Remove</button>
             </mat-action-row>
         </mat-expansion-panel>
     </mat-accordion>
     <br>
-
     <mat-card-actions align="right">
         <button mat-raised-button color="primary" [disabled]="finished()" (click)="savePet(pet)">
             <span>{{isNewPet ? "Save" : "Save Changes"}}</span>
         </button>
-        <button mat-raised-button [disabled]="imageUploading" (click)="cancel()">Cancel</button>
-        <button mat-raised-button color="warn" *ngIf="!isNewPet" (click)="removePet()">Remove</button>
+        <button mat-raised-button [disabled]="imgUploading" (click)="cancel()">Cancel</button>
+        <button mat-raised-button [disabled]="imgUploading" color="warn" *ngIf="!isNewPet" (click)="removePet()">Remove</button>
     </mat-card-actions>
 </mat-card>

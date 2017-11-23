@@ -1,12 +1,15 @@
-<mat-toolbar color='primary'>    
+<mat-toolbar color='primary'>
   <div fxLayoutAlign="space-between center" class="nav-buttons">
     <span style="cursor: pointer" (click)="onClick()">ARC</span>
     <div *ngIf="!(authService.user$ | async)?.uid">
-      <button mat-raised-button color="accent" (click)="authService.login()">Login</button>
+      <button mat-raised-button style="font-size: 14pt" color="accent" (click)="authService.login()">Login</button>
     </div>
     <div *ngIf="(authService.user$ | async)?.uid">
+      <span *ngIf="(authService.user$ | async)?.roles.admin">
+        <button mat-button style="font-size: 14pt; margin-right: 5px" [routerLink]="['/admin']">Admin</button>
+      </span>
       <button mat-button style="font-size: 14pt; margin-right: 20px" [routerLink]="['/pet-list']">Pets</button>
-      <span style="font-size: 14pt">Welcome, {{(authService.user$ | async)?.displayName.split(" ")[0]}}</span> &nbsp;&nbsp;
+      <span style="font-size: 14pt">Welcome, {{(authService.user$ | async)?.displayName.split(' ')[0]}}</span> &nbsp;&nbsp;
       <button mat-raised-button style="font-size: 14pt" color="accent" (click)="logoutDialog()">Logout</button>
     </div>
   </div>

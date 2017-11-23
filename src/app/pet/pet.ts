@@ -1,10 +1,9 @@
 import { Med } from '../med';
-export interface Pet {
+export class Pet {
     name: string;
-    age: string;
-    info: string;
-    imageUrl?: string;
+    age: string = '';
+    info: string = '';
+    imgUrl?: string;
     imgId: string;
-    meds: Array<Med>;
-    
+    meds: Med[] = [];
 }

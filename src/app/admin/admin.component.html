@@ -1,0 +1,66 @@
+<mat-card>
+  <mat-card-title>
+    Admin Edit
+  </mat-card-title>
+  <mat-accordion>
+    <mat-expansion-panel>
+      <mat-expansion-panel-header style="font-size: 14pt">
+        Demo Medications
+      </mat-expansion-panel-header>
+      <span style="padding: 0 20px 0 20px; font-size: 12pt">Medication</span>
+      <button mat-raised-button color="primary" (click)="modify('demo', true)">Add</button>
+      <br>
+      <br>
+      <div *ngFor="let med of demoMeds; let i=index; trackBy:customTrackBy">
+        <mat-form-field style="padding: 0 290px 0 20px">
+          <input matInput placeholder="Demo Medication" [(ngModel)]="demoMeds[i]">
+          <span matPrefix>{{i+1}}.&nbsp;&nbsp;</span>
+        </mat-form-field>
+        <button mat-raised-button color="warn" (click)="modify('demo', false, i)">Remove</button>
+        <br>
+      </div>
+    </mat-expansion-panel>
+    <mat-expansion-panel>
+        <mat-expansion-panel-header style="font-size: 14pt">
+          Dosage Types
+        </mat-expansion-panel-header>
+        <span style="padding: 0 20px 0 20px; font-size: 12pt">Type</span>
+        <button mat-raised-button color="primary" (click)="modify('dose', true)">Add</button>
+        <br>
+        <br>
+        <div *ngFor="let type of doseTypes; let i=index; trackBy:customTrackBy">
+          <mat-form-field style="padding: 0 10px 0 0">
+            <input matInput placeholder="Option value" [(ngModel)]="doseTypes[i].value">
+          </mat-form-field>
+          <mat-form-field style="padding: 0 99px 0 0">
+              <input matInput placeholder="View value" [(ngModel)]="doseTypes[i].viewValue">
+            </mat-form-field>
+          <button mat-raised-button color="warn" (click)="modify('dose', false, i)">Remove</button>
+          <br>
+        </div>
+      </mat-expansion-panel>
+      <mat-expansion-panel>
+          <mat-expansion-panel-header style="font-size: 14pt">
+            Duration Types
+          </mat-expansion-panel-header>
+          <span style="padding: 0 20px 0 20px; font-size: 12pt">Type</span>
+          <button mat-raised-button color="primary" (click)="modify('dur', true)">Add</button>
+          <br>
+          <br>
+          <div *ngFor="let type of durTypes; let i=index; trackBy:customTrackBy">
+            <mat-form-field style="padding: 0 10px 0 0">
+              <input matInput placeholder="Option value" [(ngModel)]="durTypes[i].value">
+            </mat-form-field>
+            <mat-form-field style="padding: 0 99px 0 0">
+                <input matInput placeholder="View value" [(ngModel)]="durTypes[i].viewValue">
+              </mat-form-field>
+            <button mat-raised-button color="warn" (click)="modify('dur', false, i)">Remove</button>
+            <br>
+          </div>
+        </mat-expansion-panel>
+  </mat-accordion>
+  <br>
+  <mat-card-actions align="right">
+    <button mat-raised-button color="primary" (click)="save()">Save Changes</button>
+  </mat-card-actions>
+</mat-card>

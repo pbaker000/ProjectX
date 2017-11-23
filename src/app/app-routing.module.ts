@@ -5,10 +5,13 @@ import { PetEditComponent } from './pet/pet-edit/pet-edit.component';
 import { HomeComponent } from './home/home.component';
 import { AuthGuard } from './auth/auth.guard';
 import { NotFoundComponent } from './not-found/not-found.component';
+import { AdminComponent } from './admin/admin.component';
+import { AdminGuard } from './admin/admin.guard';
 
 const routes: Routes = [
     { path: '', pathMatch: 'full', redirectTo: 'home' },
     { path: 'home', component: HomeComponent },
+    { path: 'admin', component: AdminComponent, canActivate: [AdminGuard] },
     { path: 'pet-list', component: PetListComponent, canActivate: [AuthGuard] },
     { path: 'pet-edit/:id', component: PetEditComponent, canActivate: [AuthGuard] },
     { path: '404', component: NotFoundComponent },

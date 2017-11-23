@@ -1,6 +1,6 @@
 <div class="card-container">
     <mat-card *ngFor=" let pet of pets$ | async">
-        <img mat-card-image [src]="pet.imageUrl" onerror="this.src='./assets/images/placeholder.png';" alt="Photo of your pet">
+        <img mat-card-image [src]="pet.imgUrl" onerror="this.src='./assets/images/placeholder.png';" alt="Photo of your pet">
         <mat-card-content>
             <div style="padding-bottom: 3%">
                 <div style="padding-left: 73%; position: absolute">

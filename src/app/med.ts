@@ -1,9 +1,12 @@
 export class Med {
-    amount: string;
-    frequency: string;
-    addinfo: string;
+    dosage: string = '';
+    doseType: string = '';
+    duration: string = '';
+    durType: string = '';
+    
 
     constructor(public name: string) {
+        
     }
 
 }

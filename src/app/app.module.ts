@@ -7,7 +7,7 @@ import { HttpModule } from '@angular/http';
 import { RouterModule } from '@angular/router';
 import { AngularFireModule } from 'angularfire2'
 import { AppComponent } from './app.component';
-import { MatToolbarModule } from '@angular/material';
+import { MatToolbarModule, MatSelectModule } from '@angular/material';
 import { MatIconModule } from '@angular/material';
 import { MatButtonModule } from '@angular/material';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -30,7 +30,11 @@ import { Ng2ImgToolsModule } from 'ng2-img-tools';
 import { AuthService } from './auth/auth.service';
 import { AuthGuard } from './auth/auth.guard';
 import { NotFoundComponent } from './not-found/not-found.component';
-import { MatExpansionModule } from '@angular/material'
+import { MatExpansionModule } from '@angular/material';
+import { MatAutocompleteModule } from '@angular/material';
+import { MatOptionModule } from '@angular/material';
+import { AdminComponent } from './admin/admin.component';
+import { AdminGuard } from './admin/admin.guard';
 
 
 @NgModule({
@@ -41,6 +45,7 @@ import { MatExpansionModule } from '@angular/material'
     HomeComponent,
     ConfirmDialog,
     NotFoundComponent,
+    AdminComponent,
   ],
   imports: [
     BrowserModule,
@@ -60,11 +65,14 @@ import { MatExpansionModule } from '@angular/material'
     MatDialogModule,
     Ng2ImgToolsModule,
     AngularFireAuthModule,
-    MatExpansionModule
+    MatExpansionModule,
+    MatAutocompleteModule,
+    MatOptionModule,
+    MatSelectModule
     //ImageCropperComponent,
     //CropperSettings
   ],
-  providers: [AuthGuard, AuthService, PetService, DialogService],
+  providers: [AuthGuard, AuthService, PetService, DialogService, AdminGuard],
   bootstrap: [AppComponent],
   entryComponents: [ConfirmDialog]
 })

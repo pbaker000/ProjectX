@@ -11,6 +11,9 @@ import { FormControl, Validators, FormGroup, FormArray } from '@angular/forms';
 import { AuthService } from '../../auth/auth.service';
 import { Med } from '../../med';
 import { ISubscription } from 'rxjs/Subscription';
+import 'rxjs/add/operator/startWith';
+import 'rxjs/add/operator/map';
+import { AngularFireDatabase } from 'angularfire2/database';
 
 
 @Component({
@@ -23,22 +26,24 @@ export class PetEditComponent implements OnInit, OnDestroy, AfterViewChecked {
   petKey: string;
   pet$: Observable<Pet>;
   pet: Pet;
-  imageUploading: boolean;
+  imgUploading: boolean;
+  prevImg: any;
+  options: string[] = [];
+  filteredOptions: Observable<string[]>[] = [];
   myForm = new FormGroup({
-    'name': new FormControl('', [Validators.required, Validators.pattern(".*\\S.*"), Validators.maxLength(20)]),
+    'name': new FormControl('', [Validators.required, Validators.pattern('.*\\S.*'), Validators.maxLength(20)]),
     'age': new FormControl(),
     'info': new FormControl(),
     'medications': new FormArray([])
   });
   petSub: ISubscription;
 
+  doseTypes = [];
 
-  constructor(private router: Router,
-    private activatedRoute: ActivatedRoute,
-    private petService: PetService,
-    private dialogService: DialogService,
-    private authService: AuthService,
-    private changeDetectionRef: ChangeDetectorRef) {
+  durTypes = [];
+
+  constructor(private router: Router, private activatedRoute: ActivatedRoute, private petService: PetService, private dialogService: DialogService,
+    private authService: AuthService, private changeDetectionRef: ChangeDetectorRef, private db: AngularFireDatabase) {
 
   }
 
@@ -46,23 +51,31 @@ export class PetEditComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.petKey = this.activatedRoute.snapshot.params['id'];
     this.isNewPet = this.petKey === 'new';
 
-    !this.isNewPet ? this.getPet() : this.pet$ = Observable.of({}) as Observable<Pet>;
+    !this.isNewPet ? this.getPet() : this.pet$ = Observable.of(new Pet()) as Observable<Pet>;
 
-    this.petSub = this.pet$.subscribe(pet => {
+    this.db.list(`admin/data`).valueChanges<string[]>()
+    .subscribe(data => {
+        this.options = data[0];
+        this.doseTypes = data[1];
+        this.durTypes = data[2];
+      });
+
+    this.petSub = this.pet$.subscribe((pet: Pet) => {
       this.pet = pet;
-      this.petInit(pet);
+      this.isNewPet && (pet.imgId = UUID.UUID()); // if it is a new pet we create a uid for the img
+      pet && pet.meds && pet.meds.forEach(meds => this.addMedFC());
     });
-
   }
 
   ngAfterViewChecked(): void {
     this.changeDetectionRef.detectChanges(); // manually call detect changes in order to fix Expression Changed Error
   }
 
-  petInit(pet: Pet) {
-    this.isNewPet && (pet.imgId = UUID.UUID()); // if it is a new pet we create a uid for the img
-    pet && pet.meds && pet.meds.forEach(med => this.addMedFC());
+  filter(val: string): string[] {
+    return this.options.filter(option =>
+      option.toLowerCase().indexOf(val.toLowerCase()) === 0);
   }
+
 
   getPet() {
     this.pet$ = this.petService.getPet(this.petKey);
@@ -72,26 +85,26 @@ export class PetEditComponent implements OnInit, OnDestroy, AfterViewChecked {
     return this.myForm.get('name').invalid ? 'You must enter a valid pet name' : '';
   }
 
-  uploadImage(event: any, pet: Pet) {
-    this.imageUploading = true;
-    const file = event.srcElement.files[0];
-    const storageRef = firebase.storage().ref(`pets/${pet.imgId}`);
-    storageRef.put(file)
-      .then(uploadTask => {
-        pet.imageUrl = uploadTask.downloadURL;
-        this.imageUploading = false;
-        console.log("Success, image uploaded. URL: ", pet.imageUrl);
-      });
+  prevImgUpload(event: any, pet: Pet) {
+    let file = event.srcElement.files[0];
+    if (file) {
+      this.prevImg = file;
+
+      this.imgUploading = true;
+      this.petService.uploadImage(this.prevImg, pet, true)
+        .then(_ => this.imgUploading = false);
+    }
   }
 
   addMed(pet: Pet) {
     !pet.meds && (pet.meds = []);
     this.addMedFC();
+
     this.petService.addMed(pet);
   }
 
   removeMed(pet: Pet, index: number) {
-    this.dialogService.confirm("Remove Medication", "Are you sure you want to remove this medication?")
+    this.dialogService.confirm('Remove Medication', 'Are you sure you want to remove this medication?')
       .subscribe(res => {
         if (res) {
           this.petService.removeMed(pet, index);
@@ -102,16 +115,25 @@ export class PetEditComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   getMedErrorMessage(index: string) {
     return (<FormArray>this.myForm.get('medications')).get(index.toString()).invalid
-      ? ((document.getElementById(index).className = "none") && 'You must enter a valid medication name')
-      : ((document.getElementById(index).className = "container-parent") && '');
+      ? ((document.getElementById(index).className = 'none') && 'You must enter a valid medication name')
+      : ((document.getElementById(index).className = 'container-parent') && '');
   }
 
   addMedFC() {
-    (<FormArray>this.myForm.get('medications')) //add a new control form
-      .push(new FormControl('', [Validators.required, Validators.pattern(".*\\S.*"), Validators.maxLength(25)]));
+    let medFA = (<FormArray>this.myForm.get('medications'));
+
+    medFA.push(new FormControl('', [Validators.required, Validators.pattern('.*\\S.*'), Validators.maxLength(25)]));
+
+    this.filteredOptions[medFA.length - 1] = (<FormArray>this.myForm.get('medications')).get((medFA.length - 1).toString()).valueChanges.startWith(null)
+      .map(val => val ? this.filter(val) : this.options.slice());
   }
 
   savePet(pet: Pet) {
+    this.prevImg ? this.petService.uploadImage(this.prevImg, pet, false).then(_ => this.save(pet))
+      : this.save(pet);
+  }
+
+  save(pet: Pet) {
     const save = this.isNewPet
       ? this.petService.savePet(pet)
       : this.petService.editPet(pet, this.petKey);
@@ -120,30 +142,32 @@ export class PetEditComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   removePet() {
-    this.dialogService.confirm("Remove Pet", "Are you sure you want to remove this pet?").subscribe(res => {
-      res && this.petService.removePet(this.petKey, this.pet.imgId, this.pet.imageUrl) // if result is true then remove pet
-        .then(_ => this.router.navigate(['pet-list']));
+    this.dialogService.confirm('Remove Pet', 'Are you sure you want to remove this pet?').subscribe(res => {
+      if (res) {
+        this.petService.deleteImage(this.pet.imgId, false);
+        this.petService.deleteImage(this.pet.imgId, true);
+        this.petService.removePet(this.petKey).then(_ => this.router.navigate(['pet-list']));
+      }
     });
   }
 
   cancel() {
-    this.isNewPet && this.pet.imageUrl && this.petService.deleteImage(this.pet.imgId) //if new pet and have imgUrl we delete it
+    this.isNewPet && this.petService.deleteImage(this.pet.imgId, true);
     this.router.navigate(['pet-list']);
   }
 
   finished() {
-    return this.myForm.invalid || this.imageUploading;
+    return this.myForm.invalid || this.imgUploading;
   }
-
 
   getPlaceholder(selector: string) {
     switch (selector) {
-      case "name":
-        return this.isNewPet ? "Enter your pet's name" : "Pet Name";
-      case "age":
-        return this.isNewPet ? "Enter your pet's age" : "Pet Age";
+      case 'name':
+        return this.isNewPet ? "Enter your pet's name" : 'Pet Name';
+      case 'age':
+        return this.isNewPet ? "Enter your pet's age" : 'Pet Age';
       default:
-        return "error";
+        return 'error';
     }
   }
 
