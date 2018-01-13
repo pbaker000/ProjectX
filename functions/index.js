@@ -11,9 +11,9 @@ exports.minutely_job =
 
 
     admin.database().ref('/users').once('value').then(function (snapshot) {
-      //});
 
-      //ref.on('value', function (snapshot) {
+      var petKey;
+
       var users = Object.keys(snapshot.val()).map(function (key) {
         return snapshot.val()[key];
       });
@@ -21,20 +21,22 @@ exports.minutely_job =
         var userId = user.uid;
         if (user.pets) {
           var pets = Object.keys(user.pets).map(function (key) {
+            petKey = key;
             return user.pets[key];
           });
           pets.forEach(function (pet) {
             if (pet.meds) {
               pet.meds.forEach(function (med, i) {
+                var petRef = admin.database().ref(`users/${userId}/pets/${petKey}`);
+
                 var doseT = med.doseType.toString();
 
                 var notificationsRef = admin.database().ref(`users/${userId}/notifications`);
-                //var petRef = admin.database().ref(`users/${userId}/pets`);
-                console.log(pet);
+
                 const payload = {
                   notification: {
                     title: `Medicate your pet, ${pet.name}! ${new Date().toISOString()}`,
-                    body: `Give your pet, ${pet.name}, ${med.dosage} ${doseT.substring(0, doseT.length - 2)} of ${med.name}. There are ${med.remainingDoses} doses left until reorder.`,
+                    body: `Give your pet, ${pet.name}, ${med.dosage} ${doseT.substring(0, doseT.length - 2)} of ${med.name}. There are ${med.remainingDoses - 1} doses left until reorder.`,
                     icon: './src/assets/images/arc_logo.jpg'
                   }
                 }
@@ -48,7 +50,7 @@ exports.minutely_job =
                   var diffMins = Math.floor(timeDiff / (1000 * 60));
                   var diffHrs = Math.ceil(timeDiff / (1000 * 3600));
                   if ((med.durType.substring(0, med.durType.length - 2) == 'minutes' && diffMins % med.mins == 0) || (med.durType.substring(0, med.durType.length - 2) == 'hours' && diffHrs % med.hours == 0) && oldHours != diffHrs) {
-                    
+
                     // if (med.hrs && diffHrs % med.hrs == 0) {
                     //   var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
                     //   if (med.days && diffDays % med.days == 0) {
@@ -59,9 +61,9 @@ exports.minutely_job =
                     //         var diffYears = Math.ceil(timeDiff / (1000 * 3600 * 24 * 365));
                     //         if (med.years && diffYears % med.years == 0) {
 
-                    //if (med.remainingDoses == 0) {
-                    //  payload.notification.body = `You're out of medication, time to order some more!`;
-                    //}
+                    if (med.remainingDoses == 0) {
+                      payload.notification.body = `You're out of medication, time to order some more!`;
+                    }
                     admin.database()
                       .ref(`/fcmTokens/${userId}`)
                       .once('value')
@@ -71,13 +73,14 @@ exports.minutely_job =
                       })
                       .then(res => {
                         console.log("Sent Successfully", res);
-                        if(med.durType == 'hours'){
+                        if (med.durType == 'hours') {
                           oldHours = diffHrs;
                         }
                         if (med.remainingDoses > 0) {
                           pet.meds[i].remainingDoses -= 1;
                         }
-                        //petRef.update(pet);
+                        petRef.update(pet)
+                          .then(_ => console.log('Success, updated'));
                         console.log("RD", med.remainingDoses);
                         notificationsRef.push(payload.notification);
                       })

@@ -9,9 +9,11 @@ import { Component } from '@angular/core';
 export class AlertDialog {
 
     title: string;
+    //date: string;
     message: string;
 
     constructor(public dialogRef: MatDialogRef<AlertDialog>) {
-
+        //this.date = this.title.split('!')[2];
+        //console.log(this.date);
     }
 }
