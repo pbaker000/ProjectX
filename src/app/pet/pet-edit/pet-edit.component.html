@@ -25,7 +25,6 @@
     <br>
     <hr>
     <br>
-
     <div>
         <span style="font-size: 16pt; float: left; margin-top: 5px;">
             Medications &nbsp;&nbsp;
@@ -35,54 +34,166 @@
     <br>
     <mat-accordion>
         <mat-expansion-panel *ngFor="let med of pet.meds; let i=index">
-                <mat-expansion-panel-header [formGroup]="myForm">
-                    <div formArrayName="medications" class="container-parent" [id]="i">
-                        <mat-form-field class="expansion-title" floatPlaceholder="never">
-                            <input (click)="disableExtension($event)" (keydown.space)="disableExtension($event)" (keyup.space)="disableExtension($event)"
+            <mat-expansion-panel-header [formGroup]="myForm">
+                <div formArrayName="medications" class="container-parent" [id]="i">
+                    <mat-form-field class="expansion-title" floatPlaceholder="never">
+                        <input (click)="disableExtension($event)" (keydown.space)="disableExtension($event)" (keyup.space)="disableExtension($event)"
                             matInput placeholder="Medication Name" [formControlName]="i" required pattern [(ngModel)]="med.name"
                             [matAutocomplete]="auto">
-                            <mat-autocomplete #auto="matAutocomplete">
-                                <mat-option *ngFor="let option of filteredOptions[i] | async" [value]="option">
-                                    {{option}}
-                                </mat-option>
-                            </mat-autocomplete>
-                        </mat-form-field>
-                    </div>
-                    <div style="padding: 18px 0 0 18px">
-                        <mat-error>{{getMedErrorMessage(i)}}</mat-error>
-                    </div>
-                </mat-expansion-panel-header>
-            <mat-form-field style="width: 85px">
-                <input matInput type="number" min="1" placeholder="# of Doses" [(ngModel)]="med.dosage">
-            </mat-form-field>
-            <br>
-            <mat-form-field>
-                <span matPrefix>{{med.dosage ? med.dosage + "&nbsp;&nbsp;": ""}}</span>
-                <mat-select placeholder="Dose Type" [(ngModel)]="med.doseType">
-                    <mat-option *ngFor="let dose of doseTypes" [value]="dose.value">
-                        {{ dose.viewValue }}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-            <br>
-            <label>every</label>
-            <br>
-            <mat-form-field style="width: 35px; padding-top: 5px">
-                <input matInput type="number" min="1" max="60" placeholder="#" [(ngModel)]="med.duration">
-            </mat-form-field>
-            <mat-form-field style="width: 160px">
-                <mat-select placeholder="Duration" [(ngModel)]="med.durType">
-                    <mat-option *ngFor="let dur of durTypes" [value]="dur.value" >
-                        {{ dur.viewValue }}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-            <br>
+                        <mat-autocomplete #auto="matAutocomplete">
+                            <mat-option *ngFor="let option of filteredOptions[i] | async" [value]="option">
+                                {{option}}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div style="padding: 18px 0 0 18px">
+                    <mat-error>{{getMedErrorMessage(i)}}</mat-error>
+                </div>
+            </mat-expansion-panel-header>
+            <div style="padding-left: 10px">
+                <div style="padding-top: 5px">
+                    Doses remaining until reorder: {{med.remainingDoses}}
+                </div>
+                <br> Total number of doses:&nbsp;
+                <mat-form-field style="width: 35px">
+                    <input matInput type="number" min="1" placeholder="#" [(ngModel)]="med.totalDoses">
+                </mat-form-field>
+                <br> Dose given: &nbsp;
+                <mat-form-field style="width: 35px; padding-top: 5px">
+                    <input matInput type="number" min="1" placeholder="#" [(ngModel)]="med.dosage">
+                </mat-form-field>
+                <mat-form-field style="width: 160px">
+                    <mat-select placeholder="Dose Type" [(ngModel)]="med.doseType">
+                        <mat-option *ngFor="let dose of doseTypes" [value]="dose.value">
+                            {{ dose.viewValue }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <br> Start Date: &nbsp;
+                <mat-form-field>
+                    <input matInput [matDatepicker]="picker" placeholder="Notification start time" [(ngModel)]="med.startDateTime">
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+                <br> Start Time: &nbsp;
+                <mat-form-field style="width: 35px" floatPlaceholder="never">
+                    <input matInput type="number" min="1" max="12" placeholder="H" [(ngModel)]="notifications[i][0]">
+                </mat-form-field>
+                <span>:</span>
+                <mat-form-field style="width: 35px" floatPlaceholder="never">
+                    <input matInput type="number" min="1" max="59" placeholder="M" [(ngModel)]="notifications[i][1]">
+                </mat-form-field>
+                <mat-form-field style="width: 65px" floatPlaceholder="never">
+                    <mat-select placeholder="Period" [(ngModel)]="notifications[i][2]">
+                        <mat-option *ngFor="let per of periods" [value]="per.value">
+                            {{ per.viewValue }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <br> Frequency: &nbsp;
+                <span *ngIf="med.durType.substring(0, med.durType.length-2) == 'minutes'">
+                    every &nbsp;
+                    <mat-form-field style="width: 35px; padding-top: 5px">
+                        <input matInput type="number" min="1" max="120" placeholder="#" [(ngModel)]="med.mins">
+                    </mat-form-field>
+                </span>
+                <span *ngIf="med.durType.substring(0, med.durType.length-2) == 'hours'">
+                    every &nbsp;
+                    <mat-form-field style="width: 35px; padding-top: 5px">
+                        <input matInput type="number" min="1" max="24" placeholder="#" [(ngModel)]="med.hours">
+                    </mat-form-field>
+                </span>
+                <mat-form-field style="width: 160px">
+                    <mat-select placeholder="How often" [(ngModel)]="med.durType">
+                        <mat-option *ngFor="let dur of durTypes" [value]="dur.value">
+                            {{ dur.viewValue }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field> &nbsp;
+                <span *ngIf="med.durType.substring(0, med.durType.length-2) == 'bi-weekly'">
+                    Every two weeks on &nbsp;
+                    <mat-form-field style="width: 160px">
+                        <mat-select placeholder="Day of week" [(ngModel)]="med.doWType">
+                            <mat-option *ngFor="let doW of doWTypes" [value]="doW.value">
+                                {{ doW.viewValue }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </span>
+                <span *ngIf="med.durType.substring(0, med.durType.length-2) == 'monthly'">
+                    Every month on the &nbsp;
+                    <mat-form-field style="width: 160px">
+                        <mat-select placeholder="Day of month" [(ngModel)]="med.doMType">
+                            <mat-option *ngFor="let doM of doMTypes" [value]="doM.value">
+                                {{ doM.viewValue }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </span>
+                <span *ngIf="med.durType.substring(0, med.durType.length-2) == 'twice a month'">
+                    Every month on the &nbsp;
+                    <mat-form-field style="width: 160px">
+                        <mat-select placeholder="Day of month" [(ngModel)]="med.doMType">
+                            <mat-option *ngFor="let doM of doMTypes" [value]="doM.value">
+                                {{ doM.viewValue }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <br> &nbsp; and the &nbsp;
+                    <mat-form-field style="width: 160px">
+                        <mat-select placeholder="Day of month" [(ngModel)]="med.doMType">
+                            <mat-option *ngFor="let doM of doMTypes" [value]="doM.value">
+                                {{ doM.viewValue }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </span>
+                <br>
+            </div>
             <mat-action-row align="right" style="padding-right: 15px">
                 <button mat-raised-button color="warn" (click)="removeMed(pet, i)">Remove</button>
             </mat-action-row>
         </mat-expansion-panel>
     </mat-accordion>
+    <br>
+    <br>
+    <span style="font-size: 16pt; float: left; margin-top: 5px;">
+        Veterinarian Information
+    </span>
+    <br>
+    <br>
+    <br>
+    <div style="padding-left: 10px">
+        <mat-form-field>
+            <input matInput placeholder="First Name" [(ngModel)]="pet.vetFirstName">
+        </mat-form-field>
+        <mat-form-field>
+            <input matInput placeholder="Last Name" [(ngModel)]="pet.vetLastName">
+        </mat-form-field>
+        <br>
+        <mat-form-field>
+            <input matInput placeholder="Phone Number" [(ngModel)]="pet.vetNumber">
+        </mat-form-field>
+        <br>
+        <mat-form-field>
+            <input matInput placeholder="Address 1" [(ngModel)]="pet.vetAdd1">
+        </mat-form-field>
+        <br>
+        <mat-form-field>
+            <input matInput placeholder="Address 2" [(ngModel)]="pet.vetAdd2">
+        </mat-form-field>
+        <br>
+        <mat-form-field>
+            <input matInput placeholder="City" [(ngModel)]="pet.vetCity">
+        </mat-form-field>
+        <mat-form-field>
+            <input matInput placeholder="State" [(ngModel)]="pet.vetState">
+        </mat-form-field>
+        <mat-form-field>
+            <input matInput placeholder="ZIP" [(ngModel)]="pet.vetZip">
+        </mat-form-field>
+    </div>
     <br>
     <mat-card-actions align="right">
         <button mat-raised-button color="primary" [disabled]="finished()" (click)="savePet(pet)">

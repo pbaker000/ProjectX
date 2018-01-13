@@ -28,7 +28,57 @@ export class PetEditComponent implements OnInit, OnDestroy, AfterViewChecked {
   pet: Pet;
   imgUploading: boolean;
   prevImg: any;
+  unchangedTD: any[] = [];
   options: string[] = [];
+  notifications: any[][] = [];
+  periods = [
+    { value: "am-0", viewValue: "am" },
+    { value: "pm-1", viewValue: "pm" }
+  ]
+
+  doWTypes = [
+    { value: "sunday-0", viewValue: "Sunday" },
+    { value: "monday-1", viewValue: "Monday" },
+    { value: "tuesday-2", viewValue: "Tuesday" },
+    { value: "wednesday-3", viewValue: "Wednesday" },
+    { value: "thursday-4", viewValue: "Thursday" },
+    { value: "friday-5", viewValue: "Friday" },
+    { value: "saturday-6", viewValue: "Saturday" }
+  ]
+
+  doMTypes = [
+    { value: "1-0", viewValue: "1st" },
+    { value: "2-1", viewValue: "2nd" },
+    { value: "3-2", viewValue: "3rd" },
+    { value: "4-3", viewValue: "5th" },
+    { value: "5-4", viewValue: "6th" },
+    { value: "6-5", viewValue: "7th" },
+    { value: "7-6", viewValue: "8th" },
+    { value: "8-7", viewValue: "9th" },
+    { value: "9-8", viewValue: "10th" },
+    { value: "10-9", viewValue: "11th" },
+    { value: "11-10", viewValue: "12th" },
+    { value: "12-11", viewValue: "13th" },
+    { value: "13-12", viewValue: "14th" },
+    { value: "14-13", viewValue: "15th" },
+    { value: "15-14", viewValue: "16th" },
+    { value: "16-15", viewValue: "17th" },
+    { value: "17-16", viewValue: "18th" },
+    { value: "18-17", viewValue: "19th" },
+    { value: "19-18", viewValue: "20th" },
+    { value: "20-19", viewValue: "21st" },
+    { value: "21-20", viewValue: "22nd" },
+    { value: "22-21", viewValue: "23rd" },
+    { value: "23-22", viewValue: "24th" },
+    { value: "24-23", viewValue: "25th" },
+    { value: "25-24", viewValue: "26th" },
+    { value: "26-25", viewValue: "27th" },
+    { value: "27-26", viewValue: "28th" },
+    { value: "28-27", viewValue: "29th" },
+    { value: "29-28", viewValue: "30th" },
+    { value: "30-29", viewValue: "31st" },
+  ]
+
   filteredOptions: Observable<string[]>[] = [];
   myForm = new FormGroup({
     'name': new FormControl('', [Validators.required, Validators.pattern('.*\\S.*'), Validators.maxLength(20)]),
@@ -54,7 +104,7 @@ export class PetEditComponent implements OnInit, OnDestroy, AfterViewChecked {
     !this.isNewPet ? this.getPet() : this.pet$ = Observable.of(new Pet()) as Observable<Pet>;
 
     this.db.list(`admin/data`).valueChanges<string[]>()
-    .subscribe(data => {
+      .subscribe(data => {
         this.options = data[0];
         this.doseTypes = data[1];
         this.durTypes = data[2];
@@ -63,7 +113,17 @@ export class PetEditComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.petSub = this.pet$.subscribe((pet: Pet) => {
       this.pet = pet;
       this.isNewPet && (pet.imgId = UUID.UUID()); // if it is a new pet we create a uid for the img
-      pet && pet.meds && pet.meds.forEach(meds => this.addMedFC());
+      pet && pet.meds && pet.meds.forEach((med, i) => {
+        this.unchangedTD[i] = med.totalDoses;
+
+        this.addMedFC();
+        let startDT = new Date(med.startDateTime);
+
+        this.notifications[i] = [];
+        this.notifications[i][0] = (startDT.getHours() > 12) ? startDT.getHours() - 12 : startDT.getHours();
+        this.notifications[i][1] = startDT.getMinutes();
+        this.notifications[i][2] = (startDT.getHours() > 12) ? "pm-1" : "am-0";
+      });
     });
   }
 
@@ -99,8 +159,13 @@ export class PetEditComponent implements OnInit, OnDestroy, AfterViewChecked {
   addMed(pet: Pet) {
     !pet.meds && (pet.meds = []);
     this.addMedFC();
-
     this.petService.addMed(pet);
+
+    let now = new Date();
+    this.notifications[pet.meds.length - 1] = [];
+    this.notifications[pet.meds.length - 1][0] = (now.getHours() > 12) ? now.getHours() - 12 : now.getHours();
+    this.notifications[pet.meds.length - 1][1] = now.getMinutes();
+    this.notifications[pet.meds.length - 1][2] = (now.getHours() > 12) ? "pm-1" : "am-0";
   }
 
   removeMed(pet: Pet, index: number) {
@@ -128,7 +193,19 @@ export class PetEditComponent implements OnInit, OnDestroy, AfterViewChecked {
       .map(val => val ? this.filter(val) : this.options.slice());
   }
 
+
   savePet(pet: Pet) {
+    pet.meds.forEach((med, i) => {
+      if (!med.remainingDoses || med.totalDoses != this.unchangedTD[i]) {
+        med.remainingDoses = med.totalDoses;
+      }
+
+      let startDT = new Date(med.startDateTime);
+
+      let hours = (this.notifications[i][2] == "am-0") ? this.notifications[i][0] : (this.notifications[i][0] + 12);
+
+      med.startDateTime = new Date(startDT.getFullYear(), startDT.getMonth(), startDT.getDate(), hours, this.notifications[i][1]).toISOString();
+    });
     this.prevImg ? this.petService.uploadImage(this.prevImg, pet, false).then(_ => this.save(pet))
       : this.save(pet);
   }

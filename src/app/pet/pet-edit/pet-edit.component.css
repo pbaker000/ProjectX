@@ -30,3 +30,7 @@ mat-card {
     display: block;
 }
 
+input[type=number]::-webkit-inner-spin-button {
+    opacity: 1
+}
+

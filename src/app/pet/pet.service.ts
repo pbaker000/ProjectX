@@ -91,7 +91,7 @@ export class PetService {
 
   uploadImage(file: any, pet: Pet, isTemp: boolean) {
     let pathEnd;
-    isTemp ? pathEnd = '-temp' : pathEnd = ''; 
+    isTemp ? pathEnd = '-temp' : pathEnd = '';
 
     const storageRef = firebase.storage().ref(`pets/${pet.imgId}${pathEnd}`);
     return storageRef.put(file)
@@ -100,11 +100,11 @@ export class PetService {
         console.log('Success, image uploaded. URL: ', pet.imgUrl);
       });
   }
-  
+
   deleteImage(petImgId: string, isTemp: boolean) {
     let pathEnd;
     isTemp ? pathEnd = '-temp' : pathEnd = '';
-    
+
     const storageRef = firebase.storage().ref(`pets/${petImgId}${pathEnd}`);
     storageRef.delete()
       .then(_ => console.log('Success, image deleted.')).catch(error => console.log());

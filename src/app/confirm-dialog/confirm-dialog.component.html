@@ -1,4 +1,7 @@
-<h2>{{ title }}</h2>
-<p>{{ message }}</p><br>
-<button type="button" mat-raised-button (click)="dialogRef.close(true)">Yes</button>
-<button type="button" mat-button (click)="dialogRef.close()">Cancel</button>
+<div style="margin-top: 10px; margin-bottom: 20px; font-size: 20pt">{{ title }}</div>
+<div>{{ message }}</div>
+<br>
+<div style="padding-left: 150px">
+    <button type="button" mat-raised-button (click)="dialogRef.close(true)">Yes</button>
+    <button type="button" mat-button (click)="dialogRef.close()">Cancel</button>
+</div>

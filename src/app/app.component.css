@@ -1,3 +1,19 @@
 .nav-buttons {
     width: 100%;
 }
+
+.material-icons.icon {
+    margin-bottom: 5px;
+    margin-right: 1px;
+}
+
+.material-icons.mdl-badge[data-badge]::after{
+  font-size: .4em;
+  width: 2em;
+  height: 2em;
+}
+
+.material-icons.mdl-badge[data-badge]::after {
+  top: -1em;
+  right: -1em;
+}

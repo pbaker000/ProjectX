@@ -9,7 +9,11 @@
         <button mat-button style="font-size: 14pt; margin-right: 5px" [routerLink]="['/admin']">Admin</button>
       </span>
       <button mat-button style="font-size: 14pt; margin-right: 20px" [routerLink]="['/pet-list']">Pets</button>
-      <span style="font-size: 14pt">Welcome, {{(authService.user$ | async)?.displayName.split(' ')[0]}}</span> &nbsp;&nbsp;
+      <button mat-button style="min-width: 10%" [routerLink]="['/notification']">
+        <span *ngIf="(notiService.notifications | async)?.length != 0" class="icon material-icons mdl-badge" [attr.data-badge]="(notiService.notifications | async)?.length">notifications</span>
+        <mat-icon *ngIf="(notiService.notifications | async)?.length == 0" style="padding-bottom: 5px">notifications</mat-icon>
+      </button>
+      <span style="font-size: 14pt; margin-left: 5px">Welcome, {{(authService.user$ | async)?.displayName.split(' ')[0]}}</span> &nbsp;&nbsp;
       <button mat-raised-button style="font-size: 14pt" color="accent" (click)="logoutDialog()">Logout</button>
     </div>
   </div>

@@ -1,0 +1,14 @@
+.card-container {
+    padding-top: 25px;
+  }
+  
+mat-card {
+    width: 800px;
+    box-sizing: border-box;
+    margin: 16px;
+  }
+
+mat-card-content{
+  font-size: 14pt;
+  text-align: center;
+}

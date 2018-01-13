@@ -24,6 +24,8 @@
     "@angular/platform-browser": "^4.4.5",
     "@angular/platform-browser-dynamic": "^4.4.5",
     "@angular/router": "^4.4.5",
+    "angular-material-badge": "^1.2.9",
+    "angular-material-time-picker": "^1.0.7",
     "angular2-uuid": "^1.1.1",
     "angularfire2": "^5.0.0-rc.3",
     "core-js": "^2.4.1",

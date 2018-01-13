@@ -7,6 +7,7 @@ import { AuthGuard } from './auth/auth.guard';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { AdminComponent } from './admin/admin.component';
 import { AdminGuard } from './admin/admin.guard';
+import { NotificationComponent } from './notification/notification.component';
 
 const routes: Routes = [
     { path: '', pathMatch: 'full', redirectTo: 'home' },
@@ -14,6 +15,7 @@ const routes: Routes = [
     { path: 'admin', component: AdminComponent, canActivate: [AdminGuard] },
     { path: 'pet-list', component: PetListComponent, canActivate: [AuthGuard] },
     { path: 'pet-edit/:id', component: PetEditComponent, canActivate: [AuthGuard] },
+    { path: 'notification', component: NotificationComponent, canActivate: [AuthGuard] },
     { path: '404', component: NotFoundComponent },
     { path: '**', redirectTo: '404' }
 ];

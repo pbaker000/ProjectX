@@ -24,6 +24,7 @@ import { MatInputModule } from '@angular/material';
 import { MatDialogModule } from '@angular/material';
 import { DialogService } from './dialog.service';
 import { ConfirmDialog } from './confirm-dialog/confirm-dialog.component';
+import { AlertDialog } from './alert-dialog/alert-dialog.component';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 import { Ng2ImgToolsModule } from 'ng2-img-tools'; 
 //import { ImageCropperComponent, CropperSettings } from 'ng2-img-cropper';
@@ -35,7 +36,11 @@ import { MatAutocompleteModule } from '@angular/material';
 import { MatOptionModule } from '@angular/material';
 import { AdminComponent } from './admin/admin.component';
 import { AdminGuard } from './admin/admin.guard';
-
+import { MatDatepickerModule } from '@angular/material';
+import { MatNativeDateModule } from '@angular/material';
+import { MessagingService } from './messaging.service';
+import { NotificationComponent } from './notification/notification.component';
+import { NotificationService } from './notification/notification.service';
 
 @NgModule({
   declarations: [
@@ -44,8 +49,10 @@ import { AdminGuard } from './admin/admin.guard';
     PetEditComponent,
     HomeComponent,
     ConfirmDialog,
+    AlertDialog,
     NotFoundComponent,
     AdminComponent,
+    NotificationComponent,
   ],
   imports: [
     BrowserModule,
@@ -68,12 +75,14 @@ import { AdminGuard } from './admin/admin.guard';
     MatExpansionModule,
     MatAutocompleteModule,
     MatOptionModule,
-    MatSelectModule
+    MatSelectModule,
+    MatDatepickerModule,
+    MatNativeDateModule
     //ImageCropperComponent,
     //CropperSettings
   ],
-  providers: [AuthGuard, AuthService, PetService, DialogService, AdminGuard],
+  providers: [AuthGuard, AuthService, PetService, DialogService, AdminGuard, MessagingService, NotificationService],
   bootstrap: [AppComponent],
-  entryComponents: [ConfirmDialog]
+  entryComponents: [ConfirmDialog, AlertDialog]
 })
 export class AppModule { }
