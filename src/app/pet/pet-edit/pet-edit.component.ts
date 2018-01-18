@@ -237,15 +237,29 @@ export class PetEditComponent implements OnInit, OnDestroy, AfterViewChecked {
     return this.myForm.invalid || this.imgUploading;
   }
 
-  onNavigate(add1: boolean, pet: Pet) {
-    let address;
-    add1 ? address = pet.vetAdd1 : address = pet.vetAdd2;
+  clearVet(pet: Pet) {
+    this.dialogService.confirm('Clear Veterinarian Information', 'Are you sure you want to clear the veterinarian information?').subscribe(res => {
+      if (res) {
+        pet.vetFirstName = '';
+        pet.vetLastName = '';
+        pet.vetNumber = '';
+        pet.vetAdd1 = '';
+        pet.vetAdd2 = '';
+        pet.vetCity = '';
+        pet.vetState = '';
+        pet.vetZip = '';
+      }
+    });
+  }
+
+  onNavigate(pet: Pet) {
+    let address = pet.vetAdd1 + " " + pet.vetAdd2;
 
     let finalAdd = (address) ? address.replace(' ', "+") : "";
     let finalCity = (pet.vetCity) ? "+" + pet.vetCity : "";
     let finalState = (pet.vetState) ? "+" + pet.vetState : "";
     let finalZip = (pet.vetZip) ? "+" + pet.vetZip : "";
-    
+
     window.open('https://www.google.com/maps/place/' + finalAdd + finalCity + finalState + finalZip, '_blank');
   }
 

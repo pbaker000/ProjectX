@@ -8,6 +8,7 @@ import { Observable } from 'rxjs/Observable';
 export class NotificationService {
 
   user: any;
+  ackMessageRef: any;
   messageRef: any;
   message: any;
   notifications: Observable<any[]>;
@@ -24,6 +25,7 @@ export class NotificationService {
       {
         this.user = user;
         this.messageRef = this.db.list(`users/${user.uid}/notifications`);
+        this.ackMessageRef = this.db.list(`users/${user.uid}/acknowledged`);
         this.notifications = this.messageRef.snapshotChanges().map(changes => {
           return changes.map(c => ({ key: c.payload.key, ...c.payload.val() }));
         });
@@ -35,8 +37,10 @@ export class NotificationService {
     return this.notifications;
   }
 
-  deleteNotification(notKey: string) {
-    this.messageRef.remove(notKey)
+  deleteNotification(notificationKey: string, notification: any) {
+    notification["date"] = (new Date().toISOString());
+    this.ackMessageRef.push(notification);
+    this.messageRef.remove(notificationKey)
       .then(x => console.log('Success, deleted'));
   }
 }

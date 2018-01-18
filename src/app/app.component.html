@@ -8,7 +8,8 @@
       <span *ngIf="(authService.user$ | async)?.roles.admin">
         <button mat-button style="font-size: 14pt; margin-right: 5px" [routerLink]="['/admin']">Admin</button>
       </span>
-      <button mat-button style="font-size: 14pt; margin-right: 20px" [routerLink]="['/pet-list']">Pets</button>
+      <button mat-button style="font-size: 14pt" [routerLink]="['/pet-list']">Pets</button>
+      <button mat-button style="font-size: 14pt; margin-right: 20px" [routerLink]="['/emergency']">Emergency</button>
       <button mat-button style="min-width: 10%" [routerLink]="['/notification']">
         <span *ngIf="(notiService.notifications | async)?.length != 0" class="icon material-icons mdl-badge" [attr.data-badge]="(notiService.notifications | async)?.length">notifications</span>
         <mat-icon *ngIf="(notiService.notifications | async)?.length == 0" style="padding-bottom: 5px">notifications</mat-icon>

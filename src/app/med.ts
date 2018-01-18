@@ -5,8 +5,8 @@ export class Med {
     doseType: string = '';
     durType: string = '';
     doWType: string = '';
-    doMType: string = '';
-
+    doMType: string = (new Date().getDate()-1).toString() + "-" + (new Date().getDate()-2).toString();
+    primaryNot: boolean = false;
     startDateTime: string = new Date().toISOString();
     mins: string = '';
     hours: string = '';

@@ -41,6 +41,8 @@ import { MatNativeDateModule } from '@angular/material';
 import { MessagingService } from './messaging.service';
 import { NotificationComponent } from './notification/notification.component';
 import { NotificationService } from './notification/notification.service';
+import { MatSlideToggleModule } from '@angular/material';
+import { EmergencyComponent } from './emergency/emergency.component';
 
 @NgModule({
   declarations: [
@@ -53,6 +55,7 @@ import { NotificationService } from './notification/notification.service';
     NotFoundComponent,
     AdminComponent,
     NotificationComponent,
+    EmergencyComponent,
   ],
   imports: [
     BrowserModule,
@@ -77,7 +80,8 @@ import { NotificationService } from './notification/notification.service';
     MatOptionModule,
     MatSelectModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    MatSlideToggleModule
     //ImageCropperComponent,
     //CropperSettings
   ],

@@ -19,7 +19,8 @@ export class NotificationComponent implements OnInit {
   getNotifications(){
     this.notifications$ = this.notificationService.getNotifications();
   }
-  deleteNotification(notKey: string){
-    this.notificationService.deleteNotification(notKey);
+  deleteNotification(notificationKey: string, notification: any)
+  {
+    this.notificationService.deleteNotification(notificationKey, notification);
   }
 }

@@ -1,0 +1,50 @@
+<div style="padding-top: 25px; font-size: 18pt">
+  Veterinarian Information
+</div>
+<div style="padding-left: 20px; padding-top: 25px; padding-bottom: 10px; font-size: 12pt" *ngIf="!((pets$ | async)?.length)">
+  No veterinarian information
+</div>
+<div style="padding-top: 20px; padding-left: 10px" *ngIf="((pets$ | async)?.length)">
+  <mat-expansion-panel style="width: 700px" *ngFor="let pet of pets$ | async">
+    <mat-expansion-panel-header>
+      <span *ngIf="pet.vetFirstName || pet.vetLastName">
+        {{pet.vetFirstName}} {{pet.vetLastName}}
+      </span>
+      <span *ngIf="!pet.vetFirstName && !pet.vetLastName">
+        Veterniarian for {{pet.name}}
+      </span>
+    </mat-expansion-panel-header>
+    <div style="padding-left: 5px">
+      <div style="padding-bottom: 15px" *ngIf="pet.vetFirstName || pet.vetLastName">
+        Veterinarian for {{pet.name}}
+      </div>
+      <div style="padding-bottom: 15px" *ngIf="pet.vetNumber">
+        Phone: {{pet.vetNumber}}
+      </div>
+      <div style="padding-bottom: 15px" *ngIf="pet.vetAdd1">
+        Address 1: {{pet.vetAdd1}}
+      </div>
+      <div style="padding-bottom: 15px" *ngIf="pet.vetAdd2">
+        Address 2: {{pet.vetAdd2}}
+      </div>
+      <div style="padding-bottom: 15px" *ngIf="pet.vetCity">
+        City: {{pet.vetCity}}
+      </div>
+      <div style="padding-bottom: 15px" *ngIf="pet.vetState">
+        State: {{pet.vetState}}
+      </div>
+      <div style="padding-bottom: 15px" *ngIf="pet.vetZip">
+        ZIP: {{pet.vetZip}}
+      </div>
+      <div style="padding-bottom: 5px">
+        <button mat-raised-button (click)="onNavigate(pet)">Google Maps</button>
+      </div>
+    </div>
+  </mat-expansion-panel>
+  <br>
+</div>
+<hr style="width: 700px">
+<div style="font-size: 11pt; padding-left: 95px">
+  Pet Poison Hotline: 1-888-426-4435 &nbsp; - &nbsp;
+  <a href="https://www.google.com/search?q=pet+emergency+clinics+near+me" target="_blank">Pet emergency clinics near me</a>
+</div>

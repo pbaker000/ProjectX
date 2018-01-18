@@ -56,7 +56,7 @@
                     Doses remaining until reorder: {{med.remainingDoses}}
                 </div>
                 <br> Total number of doses:&nbsp;
-                <mat-form-field style="width: 45zpx">
+                <mat-form-field style="width: 45px">
                     <input matInput type="number" min="1" placeholder="#" [(ngModel)]="med.totalDoses">
                 </mat-form-field>
                 <br> Dose given: &nbsp;
@@ -150,6 +150,11 @@
                     </mat-form-field>
                 </span>
                 <br>
+                <div style="padding-top: 10px">
+                    Primary Notification: &nbsp; Phone &nbsp;
+                    <mat-slide-toggle color="primary" [(ngModel)]="med.primaryNot">Home Assistant</mat-slide-toggle>
+                </div>
+                <br>
             </div>
             <mat-action-row align="right" style="padding-right: 15px">
                 <button mat-raised-button color="warn" (click)="removeMed(pet, i)">Remove</button>
@@ -181,13 +186,11 @@
             <br>
             <mat-form-field>
                 <input matInput placeholder="Address 1" [(ngModel)]="pet.vetAdd1">
-            </mat-form-field> &nbsp;
-            <button mat-raised-button (click)="onNavigate(true, pet)">Google Maps</button>
+            </mat-form-field>
             <br>
             <mat-form-field>
                 <input matInput placeholder="Address 2" [(ngModel)]="pet.vetAdd2">
             </mat-form-field> &nbsp;
-            <button mat-raised-button (click)="onNavigate(false, pet)">Google Maps</button>
             <br>
             <mat-form-field>
                 <input matInput placeholder="City" [(ngModel)]="pet.vetCity">
@@ -198,7 +201,13 @@
             <mat-form-field>
                 <input matInput placeholder="ZIP" [(ngModel)]="pet.vetZip">
             </mat-form-field>
+            <div style="padding-bottom: 5px; padding-top: 5px">
+                <button mat-raised-button (click)="onNavigate(pet)">Google Maps</button>
+            </div>
         </div>
+        <mat-action-row align="right" style="padding-right: 15px">
+            <button mat-raised-button color="warn" (click)="clearVet(pet)">Clear</button>
+        </mat-action-row>
     </mat-expansion-panel>
     <br>
     <mat-card-actions align="right">

@@ -55,7 +55,7 @@ export class AppComponent implements OnInit {
       .alert(payload.notification.title, payload.notification.body)
       .subscribe(res => {
         if (res) {
-          this.notiService.deleteNotification(payload.key);
+          this.notiService.deleteNotification(payload.key, payload.notification);
         }
       });
   }

@@ -8,11 +8,13 @@ import { NotFoundComponent } from './not-found/not-found.component';
 import { AdminComponent } from './admin/admin.component';
 import { AdminGuard } from './admin/admin.guard';
 import { NotificationComponent } from './notification/notification.component';
+import { EmergencyComponent } from './emergency/emergency.component';
 
 const routes: Routes = [
     { path: '', pathMatch: 'full', redirectTo: 'home' },
     { path: 'home', component: HomeComponent },
     { path: 'admin', component: AdminComponent, canActivate: [AdminGuard] },
+    { path: 'emergency', component: EmergencyComponent, canActivate: [AdminGuard]},
     { path: 'pet-list', component: PetListComponent, canActivate: [AuthGuard] },
     { path: 'pet-edit/:id', component: PetEditComponent, canActivate: [AuthGuard] },
     { path: 'notification', component: NotificationComponent, canActivate: [AuthGuard] },
